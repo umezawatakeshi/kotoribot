@@ -1,0 +1,40 @@
+# 文字コードはＵＴＦ－８、改行コードはＬＦのみ
+# $Id$
+
+use strict;
+no strict qw(vars);
+use warnings;
+use utf8;
+
+$conf = {
+	servers => [ {
+		name => "IRCnet",
+		accept_invite => 1,
+		connect => {
+			server => "irc.tokyo.wide.ad.jp",
+			username => "hogehoge",
+			nick => "fugafuga",
+			ircname => "hogehoge in IRCnet",
+		},
+		default_channel => {
+			encoding => "iso-2022-jp",
+			plugins => [
+				"KotoriBot::Plugin::URLInfo",
+				"KotoriBot::Plugin::SelfInfo",
+				"KotoriBot::Plugin::NullPo",
+			],
+		},
+		channels => [ {
+			name => "#somechannel",
+		}, {
+			name => "#anotherchannel",
+			password => "channelpassword",
+			plugins => [
+				"KotoriBot::Plugin::Dice",
+			],
+			noplugins => [
+				"KotoriBot::Plugin::NullPo",
+			},
+		} ],
+	} ],
+};
