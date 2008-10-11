@@ -61,6 +61,12 @@ sub do_request {
 		return;
 	}
 
+	unless ($url =~ m!^((https?|ftp)://[^\!\$\<\>\"\'\{\}\|\\\^\[\]\`\x00-\x20\x7f-\xff]+)$!) {
+		$self->notice_redir($redir);
+		$channel->notice("\x034Error:\x03 Bad URL");
+		return;
+	}
+
 	my $req = HTTP::Request->new("GET" , $url);
 	my $res = $self->{ua}->request($req);
 
