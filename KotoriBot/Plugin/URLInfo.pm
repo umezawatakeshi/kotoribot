@@ -103,7 +103,12 @@ sub do_request {
 			}
 		}
 
-		my $content = Encode::decode($charset, $res->content());
+		my $enc = Encode::find_encoding($charset);
+		unless (ref($enc)) {
+			$channel->notice("\x034Error:\x03 Character Encoding Unknown");
+			return;
+		}
+		my $content = $enc->decode($res->content);
 
 		my $parser = HTML::HeadParser->new();
 
