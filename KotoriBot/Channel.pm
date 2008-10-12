@@ -56,7 +56,7 @@ sub on_my_join() {
 	foreach my $plugin (@{$self->{plugins}}) {
 		$plugin->on_my_join();
 	}
-	$self->notice("Hello, this is KotoriBot.") unless $self->{suppress_introduce};
+	$self->notice("Hello, this is " . KotoriBot::Core->longversion()) unless $self->{suppress_introduce};
 }
 
 sub on_my_part() {

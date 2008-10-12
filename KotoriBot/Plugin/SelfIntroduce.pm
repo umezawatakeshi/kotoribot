@@ -15,7 +15,7 @@ sub on_my_join() {
 	my($self) = @_;
 
 	$self->{channel}->suppress_introduce();
-	$self->{channel}->notice("音無小鳥があなたをサポートします♪");
+	$self->{channel}->notice("音無小鳥があなたをサポートします♪ (" . KotoriBot::Core->longversion() . ")");
 }
 
 ###############################################################################
