@@ -29,7 +29,7 @@ sub on_public($$) {
 			}
 			$channel->notice("total ".scalar(@plugins)." plugins");
 		} elsif ($cmd eq "version") {
-			$channel->notice("秘密♪");
+			$channel->notice(KotoriBot::Core->longversion());
 		}
 	}
 }
