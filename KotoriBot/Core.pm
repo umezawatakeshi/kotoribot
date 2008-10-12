@@ -12,6 +12,10 @@ use KotoriBot::Server;
 sub rec_print($$);
 sub expand_serverhash($);
 
+sub version { return "1.0.0"; }
+
+sub longversion { return "KotoriBot " . version(); }
+
 sub spawn {
 	my($class, $conf) = @_;
 
