@@ -102,6 +102,14 @@ sub server() {
 	return $self->{server};
 }
 
+# このチャンネルの名前を返す。
+# 返り値は UTF-8 フラグ付き文字列である。
+sub name() {
+	my($self) = @_;
+
+	return $self->{name};
+}
+
 # このチャンネルに notice でメッセージを送信する。
 # 引数は UTF-8 フラグ付き文字列である。
 # 1つ目の引数が undef もしくは空文字列の場合は、2つ目の引数を送信する。
