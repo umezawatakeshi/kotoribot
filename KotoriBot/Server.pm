@@ -26,7 +26,7 @@ sub new($) {
 
 	POE::Session->create(
 		object_states => [
-			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_kick irc_invite irc_public) ],
+			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_invite irc_public) ],
 		],
 		heap => {}
 	);
