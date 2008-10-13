@@ -116,10 +116,10 @@ sub do_request {
 		$parser->parse($content);
 		$parser->eof();
 
-		$channel->notice($parser->header("title"), "(Untitled Document)");
-		if ($url =~ m|^http://www.nicovideo.jp/watch/|) {
-			$channel->notice("登録タグ: " . scalar($parser->header("X-Meta-Keywords")));
-			$channel->notice("説明文: " . scalar($parser->header("X-Meta-Description")));
+		if ($url !~ m|^http://www.nicovideo.jp/watch/|) {
+			$channel->notice($parser->header("title"), "(Untitled Document)");
+		} else {
+			$channel->notice($parser->header("title") . " (" . scalar($parser->header("X-Meta-Keywords")) . ")");
 		}
 	}
 }
