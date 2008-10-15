@@ -16,7 +16,7 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $urlmatch = qr!(https?|ftp)://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
+my $urlmatch = qr!(?:https?|ftp)://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
 
 # 本来は設定ファイルで設定できるようにするべき。
 my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
