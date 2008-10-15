@@ -16,6 +16,8 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
+my $urlmatch = qr!(https?|ftp)://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
+
 # 本来は設定ファイルで設定できるようにするべき。
 my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
 
@@ -38,7 +40,8 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	while ($message =~ m!((https?|ftp)://[^\!\$\<\>\"\'\{\}\|\\\^\[\]\`\x00-\x20\x7f-\xff]+)!g) {
+#	while ($message =~ m!((https?|ftp)://[^\!\"\$\<\>\'\{\}\|\\\^\[\]\`\x00-\x20\x7f-\xff]+)!g) {
+	while ($message =~ m!($urlmatch)!g) {
 		my $url = $1;
 
 		$self->do_request($url);
@@ -62,7 +65,7 @@ sub do_request {
 		return;
 	}
 
-	unless ($url =~ m!^((https?|ftp)://[^\!\$\<\>\"\'\{\}\|\\\^\[\]\`\x00-\x20\x7f-\xff]+)$!) {
+	unless ($url =~ m!^$urlmatch$!) {
 		$self->notice_redir($redir);
 		$channel->notice("\x034Error:\x03 Bad URL");
 		return;
