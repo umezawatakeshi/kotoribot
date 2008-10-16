@@ -95,7 +95,7 @@ sub do_request {
 		$channel->notice($res->content_type);
 	} else {
 		my @ct = $res->header("Content-Type"); # HTML 中の <meta http-equiv="Content-Type"> も一緒に返ってくる。
-		my @charsets = map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } @ct);
+		my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } @ct));
 		my $charset = $charsets[0];
 
 		if (!defined($charset)) {
