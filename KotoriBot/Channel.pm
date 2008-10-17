@@ -146,6 +146,14 @@ sub plugins() {
 	return @{$self->{plugins}};
 }
 
+sub plugin {
+	my($self, $pluginname) = @_;
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		return $plugin if (ref($plugin) eq $pluginname);
+	}
+}
+
 # KotoriBot::Channel オブジェクト自身による自己紹介を抑制する。
 # 独自の自己紹介を行うプラグインから呼び出すことを意図している。
 # 返り値は不定である。
