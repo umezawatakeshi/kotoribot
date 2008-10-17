@@ -19,7 +19,10 @@ $conf = {
 		default_channel => {
 			encoding => "iso-2022-jp",
 			plugins => [
-				"KotoriBot::Plugin::URLInfo",
+				"KotoriBot::Plugin::URIInfo",
+				"KotoriBot::Plugin::URIInfo::HTTP",
+				"KotoriBot::Plugin::URIInfo::HTML",
+				"KotoriBot::Plugin::URIInfo::NicoVideo",
 				"KotoriBot::Plugin::SelfInfo",
 				"KotoriBot::Plugin::NullPo",
 			],
