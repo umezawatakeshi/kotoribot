@@ -89,6 +89,12 @@ sub transform_uri {
 	}
 }
 
+sub credentials {
+	my($self, $hostport, $realm, $user, $pass) = @_;
+
+	$self->{ua}->credentials($hostport, $realm, $user, $pass);
+}
+
 ###############################################################################
 
 return 1;
