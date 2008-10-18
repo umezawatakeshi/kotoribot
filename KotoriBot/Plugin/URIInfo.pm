@@ -27,7 +27,7 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 
 	my $urimatch = $self->{urimatch};
-	while ($message =~ /\b($urimatch)\b/g) {
+	while ($message =~ /($urimatch)/g) {
 		my $uri = $1;
 
 		my $context = KotoriBot::Plugin::URIInfo::Context->new($self);
