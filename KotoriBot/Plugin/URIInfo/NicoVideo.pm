@@ -18,7 +18,7 @@ sub initialize {
 
 	my $uriinfo = $self->{channel}->plugin("KotoriBot::Plugin::URIInfo");
 	if ($uriinfo) {
-		$uriinfo->add_output_plugin($self, qr!http://www.nicovideo.jp/watch/..\d+!, qr/.*/);
+		$uriinfo->add_output_plugin($self, qr!http://www\.nicovideo\.jp/watch/..\d+!, qr/.*/);
 	}
 }
 
