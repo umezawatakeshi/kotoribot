@@ -1,5 +1,5 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
-# $Id: HTML.pm 25 2008-10-17 14:00:43Z umezawa $
+# $Id$
 
 package KotoriBot::Plugin::URIInfo::Image;
 
