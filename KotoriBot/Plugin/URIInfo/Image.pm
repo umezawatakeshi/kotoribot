@@ -23,7 +23,7 @@ sub initialize {
 }
 
 sub output_content {
-	my($self, $context, $content, $ct) = @_;
+	my($self, $context, $content, $ct, $clen) = @_;
 
 	my $info = Image::ExifTool::ImageInfo(\$content);
 #	{
@@ -32,7 +32,13 @@ sub output_content {
 #	}
 
 	$context->notice_redirects();
-	$context->notice("$info->{FileType} image, $info->{ImageSize}");
+	if (defined($clen)) {
+		$clen =~ s/(\d)(\d\d\d)(?!\d)/$1,$2/g;
+		$clen = ", $clen" . "bytes";
+	} else {
+		$clen = "";
+	}
+	$context->notice("$info->{FileType} image, $info->{ImageSize}$clen");
 }
 
 ###############################################################################
