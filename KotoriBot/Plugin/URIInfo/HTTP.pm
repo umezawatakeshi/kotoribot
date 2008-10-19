@@ -28,7 +28,7 @@ sub new {
 	my $ua = LWP::UserAgent->new();
 	$ua->timeout(5);
 	$ua->max_redirect(0);
-	$ua->max_size(4 * 1024); # 4KB
+	$ua->max_size(32 * 1024); # 32KB
 	$ua->agent("Kotori/" . KotoriBot::Core->version());
 	$self->{ua} = $ua;
 
