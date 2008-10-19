@@ -126,17 +126,23 @@ sub process_redirect {
 }
 
 sub process_content {
-	my($self, $content, $ct) = @_;
+	my($self, $content, $ct, $clen) = @_;
 	my $uriinfo = $self->{uriinfo};
 	my $redirects = $self->{redirects};
 
 	my $uri = $redirects->[scalar(@$redirects)-1]->[0];
 	my $output = $uriinfo->lookup_output_plugin($uri, $ct);
 	if (defined($output)) {
-		$output->output_content($self, $content, $ct);
+		$output->output_content($self, $content, $ct, $clen);
 	} else {
 		$self->notice_redirects();
-		$self->notice($ct);
+		if (defined($clen)) {
+			$clen =~ s/(\d)(\d\d\d)(?!\d)/$1,$2/g;
+			$clen = ", $clen" . "bytes";
+		} else {
+			$clen = "";
+		}
+		$self->notice("$ct$clen");
 	}
 }
 
