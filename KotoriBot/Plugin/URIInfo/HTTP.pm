@@ -85,7 +85,16 @@ sub transform_uri {
 			}
 			$content = $enc->decode($content);
 		}
-		$context->process_content($content, $res->content_type);
+		my $clen = $res->content_length;
+		my $crange = $res->header("Content-Range");
+		if (defined($crange)) {
+			if ($crange =~ /^bytes\s+(?:\d+-\d+|\*)\/(\d+)$/i) {
+				$clen = $1;
+			} else {
+				$clen = undef;
+			}
+		}
+		$context->process_content($content, $res->content_type, $clen);
 	}
 }
 
