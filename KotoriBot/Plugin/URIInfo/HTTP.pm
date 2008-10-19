@@ -66,7 +66,7 @@ sub transform_uri {
 		my $content = $res->content;
 		if ($res->content_type =~ m|text/|) {
 			my @ct = $res->header("Content-Type"); # HTML 中の <meta http-equiv="Content-Type"> も一緒に返ってくる。
-			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } @ct));
+			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } reverse @ct));
 			my $charset = $charsets[0];
 
 			if (!defined($charset)) {
