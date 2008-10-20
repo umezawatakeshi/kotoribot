@@ -137,7 +137,7 @@ sub process_content {
 	} else {
 		$self->notice_redirects();
 		if (defined($clen)) {
-			$clen =~ s/(\d)(\d\d\d)(?!\d)/$1,$2/g;
+			1 while $clen =~ s/(\d+)(\d\d\d)/$1,$2/;
 			$clen = ", $clen" . "bytes";
 		} else {
 			$clen = "";
