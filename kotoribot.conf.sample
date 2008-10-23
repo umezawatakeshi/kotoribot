@@ -39,5 +39,23 @@ $conf = {
 				"KotoriBot::Plugin::NullPo",
 			],
 		} ],
+	}, {
+		name => "Another IRC network",
+		connect => {
+			server => "irc.example.net",
+			username => "foo",
+			nick => "bar",
+			ircname => "My name is foo",
+		},
+		default_channel => {
+			encoding => "utf-8",
+			plugins => [
+				"KotoriBot::Plugin::SelfInfo",
+			],
+		},
+		channels => [ {
+			name => "#yetanotherchannel",
+			encoding => "latin-1",
+		} ],
 	} ],
 };
