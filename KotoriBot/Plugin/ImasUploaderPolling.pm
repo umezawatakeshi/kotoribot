@@ -41,7 +41,7 @@ use warnings;
 use utf8;
 
 use HTML::TokeParser;
-use POE;
+use POE qw(Component::Client::HTTP);
 
 my $listurl = "http://imas.ath.cx/~imas/cgi-bin/pages.html";
 my $baseurl = "http://imas.ath.cx/~imas/cgi-bin/src/";
@@ -56,15 +56,15 @@ sub new {
 		last => undef,
 	}, $class);
 
-	my $ua = LWP::UserAgent->new();
-	$ua->timeout(5);
-	$ua->max_redirect(0);
-	$ua->agent("Kotori/" . KotoriBot::Core->version());
-	$self->{ua} = $ua;
+	$self->{ua_alias} = "$self-POE::Component::Client::HTTP";
+	POE::Component::Client::HTTP->spawn(
+		Alias => $self->{ua_alias},
+		Agent => "Kotori/" . KotoriBot::Core->version(),
+	);
 
 	my $session = POE::Session->create(
 		object_states => [
-			$self => [ qw(_start do_request) ],
+			$self => [ qw(_start do_request done_request) ],
 		],
 		heap => {}
 	);
@@ -82,11 +82,17 @@ sub _start {
 sub do_request {
 	my($self) = @_;
 
-	my @files = ();
-
 	my $req = HTTP::Request->new("GET", $listurl);
 	$req->referer($listurl);
-	my $res = $self->{ua}->request($req);
+
+	POE::Kernel->post($self->{ua_alias}, "request", "done_request", $req);
+}
+
+sub done_request {
+	my($self, $reqp, $resp) = @_[OBJECT, ARG0, ARG1];
+
+	my @files = ();
+	my $res = $resp->[0];
 
 	if ($res->is_success) {
 		my $content = Encode::decode("shift_jis", $res->content);
@@ -114,20 +120,11 @@ sub do_request {
 			$file{origname} = $parser->get_text();
 			push(@files, \%file);
 		}
-
-		$self->done_request(\@files);
-	} else {
-		$self->done_request(undef);
 	}
-}
 
-sub done_request {
-	my($self, $f) = @_;
-
-	if (defined($f)) {
+	if (scalar(@files) > 0) {
+		@files = reverse(@files);
 		if (defined($self->{last})) {
-			my @files = reverse(@$f);
-
 			foreach my $file (@files) {
 				$file->{name} =~ /\d+/;
 				my $num = $&;
@@ -138,7 +135,7 @@ sub done_request {
 				}
 			}
 		}
-		$f->[0]->{name} =~ /\d+/;
+		$files[scalar(@files)-1]->{name} =~ /\d+/;
 		$self->{last} = $&;
 	}
 
