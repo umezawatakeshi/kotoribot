@@ -69,20 +69,21 @@ sub transform_uri {
 			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } reverse @ct));
 			my $charset = $charsets[0];
 
-			if (!defined($charset)) {
-				my $enc = guess_encoding($content, @encoding_suspects);
-				if (ref($enc)) {
-					$charset = $enc->name();
-				} else {
-					$charset = "latin-1"; # guess 失敗。仕方ないので latin-1 にする。
+			my $enc = undef;
+			if (defined($charset)) {
+				$enc = Encode::find_encoding($charset);
+				if (!ref($enc)) {
+					$enc = undef;
 				}
 			}
 
-			my $enc = Encode::find_encoding($charset);
-			unless (ref($enc)) {
-				$context->process_error("Character Encoding Unknown");
-				return;
+			if (!defined($enc)) {
+				$enc = guess_encoding($content, @encoding_suspects);
+				if (!ref($enc)) {
+					$enc = Encode::find_encoding("latin-1"); # guess 失敗。仕方ないので latin-1 にする。
+				}
 			}
+
 			$content = $enc->decode($content);
 		}
 		my $clen = $res->content_length;
