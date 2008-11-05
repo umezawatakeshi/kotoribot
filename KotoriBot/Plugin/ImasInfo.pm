@@ -104,7 +104,7 @@ sub on_public($$) {
 		my $cmd = $1;
 
 		if ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?の($param_match)$/) {
-			my $name = $1;
+			my $name = lc($1);
 			my $paramname = $2;
 			my $idol = $name_map->{$name};
 			my $fname = $idol->[0];
@@ -114,7 +114,7 @@ sub on_public($$) {
 			$paramname = $param_names[$paramidx];
 			$channel->notice("$fname$gname"."の"."$paramname = $paramval");
 		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?$/) {
-			my $name = $1;
+			my $name = lc($1);
 			my $idol = $name_map->{$name};
 			my $fname = $idol->[0];
 			my $gname = $idol->[2];
