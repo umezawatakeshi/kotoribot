@@ -42,6 +42,12 @@ my @param_names = (
 	"趣味",
 );
 
+my @infolist = (
+	4, 5, 6, 7, 8,
+	9, 10, 11,
+	13,
+);
+
 my $param_match;
 
 $param_match = join("|", keys(%$param_map));
@@ -107,6 +113,16 @@ sub on_public($$) {
 			my $paramval = $idol->[$paramidx];
 			$paramname = $param_names[$paramidx];
 			$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?$/) {
+			my $name = $1;
+			my $idol = $name_map->{$name};
+			my $fname = $idol->[0];
+			my $gname = $idol->[2];
+			foreach my $paramidx (@infolist) {
+				my $paramval = $idol->[$paramidx];
+				my $paramname = $param_names[$paramidx];
+				$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+			}
 		} elsif ($cmd =~ /^($param_match)が(\S+)/) {
 			my $num = 0;
 			my $paramname = $1;
