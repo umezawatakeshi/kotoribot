@@ -26,7 +26,7 @@ sub new {
 	my $self = bless(KotoriBot::Plugin->new($channel), $class);
 
 	my $ua = LWP::UserAgent->new();
-	$ua->timeout(5);
+	$ua->timeout(10);
 	$ua->max_redirect(0);
 	$ua->max_size(32 * 1024); # 32KB
 	$ua->agent("Kotori/" . KotoriBot::Core->version());
