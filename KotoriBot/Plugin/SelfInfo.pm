@@ -15,22 +15,16 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	while ($message =~ /\bselfinfo:(plugin[sl]?|version)\b/ig) {
-		my $cmd = $1;
-
-		if ($cmd =~ /^plugin/) {
-			my @plugins = $channel->plugins();
-			if ($cmd eq "pluginl") {
-				foreach my $plugin (@plugins) {
-					$channel->notice(ref($plugin));
-				}
-			} else {
-				$channel->notice(join(" ", map { ref($_) =~ /([^:]+)$/; $1; } @plugins));
-			}
-			$channel->notice("total ".scalar(@plugins)." plugins");
-		} elsif ($cmd eq "version") {
-			$channel->notice(KotoriBot::Core->longversion());
+	if ($message =~ /^\\plugin[sl]?$/) {
+		my @pluginnames = map { ref($_) } $channel->plugins();
+		if ($message eq "\\pluginl") {
+			$channel->notice($_) foreach @pluginnames;
+		} else {
+			$channel->notice(join(" ", map { s/^KotoriBot::Plugin:://; $_; } @pluginnames));
 		}
+		$channel->notice("total ".scalar(@pluginnames)." plugins");
+	} elsif ($message =~ /^\\version$/) {
+		$channel->notice(KotoriBot::Core->longversion());
 	}
 }
 
