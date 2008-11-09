@@ -27,6 +27,8 @@ sub on_my_kick($$) {}
 
 sub on_public($$) {}
 
+sub helpstring { return undef; }
+
 ###############################################################################
 
 return 1;
