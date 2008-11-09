@@ -19,7 +19,7 @@ sub on_public($$) {
 		my $pluginname = $1;
 		my @plugins = $channel->plugins();
 		foreach my $plugin (@plugins) {
-			if (ref($plugin) eq $pluginname) {
+			if (ref($plugin) eq $pluginname || ref($plugin) eq "KotoriBot::Plugin::$pluginname") {
 				my $helpstring = $plugin->helpstring();
 				if (defined($helpstring)) {
 					chomp($helpstring);
