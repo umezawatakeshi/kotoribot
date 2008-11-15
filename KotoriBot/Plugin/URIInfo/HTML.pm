@@ -7,7 +7,7 @@ use strict;
 use warnings;
 use utf8;
 
-use HTML::HeadParser;
+use HTML::TokeParser;
 
 use KotoriBot::Plugin;
 
@@ -25,13 +25,14 @@ sub initialize {
 sub output_content {
 	my($self, $context, $content, $ct) = @_;
 
-	my $parser = HTML::HeadParser->new();
-
-	$parser->parse($content);
-	$parser->eof();
+	my $title = undef;
+	my $parser = HTML::TokeParser->new(\$content);
+	if  ($parser->get_tag("title")) {
+		$title =  $parser->get_text();
+	}
 
 	$context->notice_redirects();
-	$context->notice($parser->header("title"), "(Untitled Document)");
+	$context->notice($title, "(Untitled Document)");
 }
 
 ###############################################################################
