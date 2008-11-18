@@ -91,6 +91,7 @@ for (my $i = 0; $i < scalar(@$list); $i++) {
 	for (my $j = 0; $j < 4; $j++) {
 		$name_map->{$idol->[$j]} = $idol;
 	}
+	$name_map->{"$idol->[0]$idol->[2]"} = $idol;
 }
 
 $name_map->{"社長"} = $name_map->{"高木"};
