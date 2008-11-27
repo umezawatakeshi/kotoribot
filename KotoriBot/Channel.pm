@@ -146,12 +146,17 @@ sub plugins() {
 	return @{$self->{plugins}};
 }
 
+# このチャンネルに関連付けられている、指定した名前のプラグインを返す。
+# 返り値は KotoriBot::Plugin（のサブクラス）のオブジェクトのリストである。
+# 指定した名前のプラグインがない場合は undef を返す。
 sub plugin {
 	my($self, $pluginname) = @_;
 
 	foreach my $plugin (@{$self->{plugins}}) {
 		return $plugin if (ref($plugin) eq $pluginname);
 	}
+
+	return undef;
 }
 
 # KotoriBot::Channel オブジェクト自身による自己紹介を抑制する。
