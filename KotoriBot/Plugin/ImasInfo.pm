@@ -123,7 +123,7 @@ sub on_public($$) {
 					$channel->notice("$fname$gname"."の"."$paramname = $paramval");
 				}
 			}
-		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?$/) {
+		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?(?:の(?:すべて|ぜんぶ|全て|全部))?$/) {
 			my $name = lc($1);
 			my $idol = $name_map->{$name};
 			my $fname = $idol->[0];
