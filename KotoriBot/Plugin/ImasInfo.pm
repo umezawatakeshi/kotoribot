@@ -126,6 +126,16 @@ sub on_public($$) {
 				my $paramname = $param_names[$paramidx];
 				$channel->notice("$fname$gname"."の"."$paramname = $paramval");
 			}
+		} elsif ($cmd =~ /^(?:みんな|全員)の($param_match)$/) {
+			my $paramname = $1;
+			my $paramidx = $param_map->{$paramname};
+			$paramname = $param_names[$paramidx];
+			foreach my $idol (@$list) {
+				my $fname = $idol->[0];
+				my $gname = $idol->[2];
+				my $paramval = $idol->[$paramidx];
+				$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+			}
 		} elsif ($cmd =~ /^($param_match)が(\S+)/) {
 			my $num = 0;
 			my $paramname = $1;
