@@ -29,6 +29,10 @@ sub output_content {
 	my $parser = HTML::TokeParser->new(\$content);
 	if  ($parser->get_tag("title")) {
 		$title =  $parser->get_text();
+		$title =~ s/[\r\n]/ /g;
+		$title =~ s/^\s+//;
+		$title =~ s/\s+$//;
+		$title =~ s/\s+/ /g;
 	}
 
 	$context->notice_redirects();
