@@ -107,16 +107,22 @@ sub on_public($$) {
 	while ($message =~ /\bimasinfo:(\S+)\b/ig) {
 		my $cmd = $1;
 
-		if ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?の($param_match)$/) {
-			my $name = lc($1);
-			my $paramname = $2;
-			my $idol = $name_map->{$name};
-			my $fname = $idol->[0];
-			my $gname = $idol->[2];
-			my $paramidx = $param_map->{$paramname};
-			my $paramval = $idol->[$paramidx];
-			$paramname = $param_names[$paramidx];
-			$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+		if (("と".$cmd."と") =~ /^((?:と$name_match(?:ちゃん|さん|くん|さま|君|様)?)+)の((?:(?:$param_match)と)+)$/) {
+			my $names = $1;
+			my $paramnames = $2;
+			while ($names =~ /と($name_match)(?:ちゃん|さん|くん|さま|君|様)?/g) {
+				my $name = lc($1);
+				my $idol = $name_map->{$name};
+				my $fname = $idol->[0];
+				my $gname = $idol->[2];
+				while ($paramnames =~ /($param_match)と/g) {
+					my $paramname = $1;
+					my $paramidx = $param_map->{$paramname};
+					my $paramval = $idol->[$paramidx];
+					$paramname = $param_names[$paramidx];
+					$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+				}
+			}
 		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?$/) {
 			my $name = lc($1);
 			my $idol = $name_map->{$name};
