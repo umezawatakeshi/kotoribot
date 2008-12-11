@@ -29,7 +29,7 @@ sub new {
 	$ua->timeout(10);
 	$ua->max_redirect(0);
 	$ua->max_size(32 * 1024); # 32KB
-	$ua->agent("Kotori/" . KotoriBot::Core->version());
+	$ua->agent(KotoriBot::Core->agent());
 	$self->{ua} = $ua;
 
 	return $self;
