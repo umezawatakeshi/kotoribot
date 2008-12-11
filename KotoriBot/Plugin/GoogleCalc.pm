@@ -39,7 +39,7 @@ sub on_public($$) {
 		$expr =~ s/([^\w ])/'%'.unpack('H2', $1)/eg;
 		$expr =~ tr/ /+/;
 
-		my $req = HTTP::Request->new("GET" , "http://www.google.co.jp/search?q=$expr&hl=ja&ie=utf-8&oe=utf-8");
+		my $req = HTTP::Request->new("GET" , "http://www.google.com/search?q=$expr&hl=ja&ie=utf-8&oe=utf-8");
 		my $res = $self->{ua}->request($req);
 
 		if ($res->code() !~ /^2/) {
