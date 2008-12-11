@@ -16,6 +16,8 @@ sub version { return "1.4.0"; }
 
 sub longversion { return "KotoriBot " . version(); }
 
+sub agent { return "KotoriBot/" . version(); }
+
 sub spawn {
 	my($class, $conf) = @_;
 
