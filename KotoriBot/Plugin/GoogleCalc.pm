@@ -1,5 +1,5 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
-# $Id: NullPo.pm 19 2008-10-15 16:30:57Z umezawa $
+# $Id$
 
 package KotoriBot::Plugin::GoogleCalc;
 
