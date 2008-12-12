@@ -54,6 +54,7 @@ sub expand_serverhash($) {
 	foreach my $ch (@{$sh->{channels}}) {
 		$ch->{persist} = 1 unless exists $ch->{persist};
 		set_default($ch, $dch, "encoding");
+		set_default($ch, $dch, "lang");
 		merge_array($ch, $dch, "plugins");
 	}
 }
