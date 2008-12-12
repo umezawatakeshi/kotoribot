@@ -15,8 +15,11 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	while ($message =~ /\bdice:(\d+)d(\d+)\b/ig) {
+	while ($message =~ /\bdice:(\d*)d(\d*)\b/ig) {
 		my($numdice, $faces) = ($1, $2);
+
+		if ($numdice eq "") { $numdice = 1; }
+		if ($faces eq "") { $faces = 6; }
 
 		next unless ($numdice > 0 && $faces > 0);
 
