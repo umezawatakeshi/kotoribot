@@ -27,7 +27,7 @@ sub new($) {
 
 	POE::Session->create(
 		object_states => [
-			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_invite irc_public) ],
+			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_quit irc_invite irc_public) ],
 		],
 		heap => {}
 	);
@@ -147,6 +147,9 @@ sub irc_join {
 		$self->{channels}->{$channelname} = $channel;
 		$channel->initialize();
 		$channel->on_my_join();
+	} else {
+		my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
+		$channel->on_join($who);
 	}
 }
 
@@ -163,20 +166,46 @@ sub irc_part {
 		$channel->on_my_part();
 		$channel->destroy();
 		delete($self->{channels}->{$self->{channelname_map}->{$channelname_encoded}});
+	} else {
+		$channel->on_part($who, $message_encoded);
 	}
 }
 
 sub irc_kick {
-	my($who, $channelname_encoded, $kickee, $message_encoded) = @_[ARG0, ARG1, ARG2, ARG3];
+	my($kicker_who, $channelname_encoded, $kickee_nick, $message_encoded, $kickee_who) = @_[ARG0, ARG1, ARG2, ARG3, ARG4];
 	my $self = $_[OBJECT];
 	my $irc = $self->{irc};
 
 	my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
 
-	if ($kickee eq $irc->nick_name()) {
-		$channel->on_my_kick($who, $message_encoded);
+	if ($kickee_nick eq $irc->nick_name()) {
+		$channel->on_my_kick($kicker_who, $message_encoded);
 		$channel->destroy();
 		delete($self->{channels}->{$self->{channelname_map}->{$channelname_encoded}});
+	} else {
+		$channel->on_kick($kicker_who, $kickee_who, $message_encoded);
+	}
+}
+
+sub irc_quit {
+	my($who, $message_encoded, $channelnames_encoded) = @_[ARG0, ARG1, ARG2];
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	my $nick = (split(/!/, $who))[0];
+
+	if ($nick eq $irc->nick_name()) {
+		foreach my $channelname_encoded (@$channelnames_encoded) {
+			my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
+			$channel->on_my_quit();
+			$channel->destroy();
+			delete($self->{channels}->{$self->{channelname_map}->{$channelname_encoded}});
+		}
+	} else {
+		foreach my $channelname_encoded (@$channelnames_encoded) {
+			my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
+			$channel->on_quit($who, $message_encoded);
+		}
 	}
 }
 

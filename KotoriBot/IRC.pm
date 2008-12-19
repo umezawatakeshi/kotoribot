@@ -8,9 +8,9 @@ use warnings;
 use utf8;
 
 use Encode;
-use POE qw(Component::IRC);
+use POE qw(Component::IRC::State);
 
-our @ISA = qw(POE::Component::IRC);
+our @ISA = qw(POE::Component::IRC::State);
 
 ###############################################################################
 

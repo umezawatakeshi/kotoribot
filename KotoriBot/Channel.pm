@@ -81,6 +81,52 @@ sub on_my_kick($$) {
 	}
 }
 
+sub on_my_quit {
+	my($self) = @_;
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_my_quit();
+	}
+}
+
+sub on_join {
+	my($self, $who) = @_;
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_join($who);
+	}
+}
+
+sub on_part {
+	my($self, $who, $message_encoded) = @_;
+
+	my $message = Encode::decode($self->{hash}->{encoding}, $message_encoded);
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_part($who, $message);
+	}
+}
+
+sub on_kick {
+	my($self, $kicker_who, $kickee_who, $message_encoded) = @_;
+
+	my $message = Encode::decode($self->{hash}->{encoding}, $message_encoded);
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_kick($kicker_who, $kickee_who, $message);
+	}
+}
+
+sub on_quit {
+	my($self, $who, $message_encoded) = @_;
+
+	my $message = Encode::decode($self->{hash}->{encoding}, $message_encoded);
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_quit($who, $message);
+	}
+}
+
 sub on_public($$) {
 	my($self, $who, $message_encoded) = @_;
 
@@ -138,6 +184,15 @@ sub part() {
 	$self->{server}->irc()->yield("part", $self->{name_encoded});
 }
 
+# このチャンネルから退出してすぐ参加する。
+# 返り値は不定である。
+sub rejoin() {
+	my($self) = @_;
+
+	$self->{server}->irc()->yield("part", $self->{name_encoded});
+	$self->{server}->irc()->yield("join", $self->{name_encoded});
+}
+
 # このチャンネルに関連付けられているプラグインオブジェクトのリストを返す。
 # 返り値は KotoriBot::Plugin（のサブクラス）のオブジェクトのリストである。
 sub plugins() {
@@ -157,6 +212,18 @@ sub plugin {
 	}
 
 	return undef;
+}
+
+sub nicks {
+	my($self) = @_;
+
+	return $self->{server}->irc()->channel_list($self->{name_encoded});
+}
+
+sub mode {
+	my($self, @param) = @_;
+
+	$self->{server}->irc()->yield("mode", $self->{name_encoded}, @param);
 }
 
 # KotoriBot::Channel オブジェクト自身による自己紹介を抑制する。
