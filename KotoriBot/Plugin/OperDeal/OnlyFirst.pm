@@ -8,9 +8,8 @@ use warnings;
 use utf8;
 
 use KotoriBot::Plugin;
-use KotoriBot::Plugin::OperDeal;
 
-our @ISA = qw(KotoriBot::Plugin::OperDeal);
+our @ISA = qw(KotoriBot::Plugin);
 
 sub on_join {
 	my($self, $who) = @_;

@@ -1,7 +1,7 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
 # $Id$
 
-package KotoriBot::Plugin::OperDeal;
+package KotoriBot::Plugin::OperRegain;
 
 use strict;
 use warnings;
