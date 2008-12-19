@@ -15,7 +15,7 @@ sub check_regain {
 	my($self) = @_;
 	my $channel = $self->{channel};
 
-	if (scalar($channel->nicks()) == 1) {
+	if (scalar($channel->nicks()) == 1 && !$channel->am_operator()) {
 		$channel->rejoin();
 	}
 }
