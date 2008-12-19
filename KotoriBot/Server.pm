@@ -10,12 +10,13 @@ use utf8;
 use Encode;
 use POE qw(Component::IRC);
 
+use KotoriBot::IRC;
 use KotoriBot::Channel;
 
 sub new($) {
 	my($class, $hash) = @_;
 
-	my $irc = POE::Component::IRC->spawn();
+	my $irc = KotoriBot::IRC->spawn();
 
 	my $self = bless({
 		hash => $hash,
