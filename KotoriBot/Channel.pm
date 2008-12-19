@@ -226,6 +226,18 @@ sub mode {
 	$self->{server}->irc()->yield("mode", $self->{name_encoded}, @param);
 }
 
+sub am_operator {
+	my($self) = @_;
+
+	return $self->is_operator($self->{server}->irc()->nick_name());
+}
+
+sub is_operator {
+	my($self, $nick) = @_;
+
+	return $self->{server}->irc()->is_channel_operator($self->{name_encoded}, $nick);
+}
+
 # KotoriBot::Channel オブジェクト自身による自己紹介を抑制する。
 # 独自の自己紹介を行うプラグインから呼び出すことを意図している。
 # 返り値は不定である。
