@@ -2,10 +2,10 @@
 <!-- $Id$ -->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>小鳥bot 1.5.0 readme （日本語）</title>
+<title>小鳥bot 1.6.0 readme （日本語）</title>
 </head>
 <body>
-<h1>小鳥bot 1.5.0 readme （日本語）</h1>
+<h1>小鳥bot 1.6.0 readme （日本語）</h1>
 <hr>
 <h2 id="copyright_notice">著作権表示</h2>
 <h3>英語</h3>
@@ -52,12 +52,23 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA)。</p>
 <li>POE::Component::Client::HTTP（KotoriBot::Plugin::ImasUploaderPolling に必要）</li>
 </ul>
 <h2 id="history">改版履歴</h2>
+<h3>バージョン 1.6.0</h3>
+<dl>
+<dt>機能追加</dt><dd><ul>
+<li>Dice プラグインで、ダイス数を省略したら 1、面数を省略したら 6 として扱うようにした。</li>
+<li>誕生日と聞いて。</li>
+<li>一人になった時にオペレータ権限を回復する OperRegain プラグインを追加した。</li>
+<li>最初に入ってきた人にオペレータ権限を与える OperDeal::OnlyFirst プラグインを追加した。</li>
+<li>プラグインにイベントハンドラをいろいろ追加した。</li>
+</ul></dd>
+<dt>その他いろいろな修正…</dt>
+</dl>
 <h3>バージョン 1.5.0</h3>
 <dl>
 <dt>機能追加</dt><dd><ul>
 <li>ImasInfo プラグインを強化した。</li>
 <li>ImasUploaderPolling で参照する URL のホストを imasupd.ddo.jp に変更した。</li>
-<li>Google 電卓を利用するための GoogleCalc プラグインを追加した。
+<li>Google 電卓を利用するための GoogleCalc プラグインを追加した。</li>
 </ul></dd>
 <dt>その他いろいろな修正…</dt>
 </dl>
