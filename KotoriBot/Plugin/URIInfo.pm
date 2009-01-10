@@ -109,7 +109,7 @@ sub process_redirect {
 
 	push(@$redirects, [ $uri, $message ]);
 
-	if (scalar(grep { $_->[0] eq $uri } @$redirects) > 1) {
+	if (scalar(grep { $_->[0] eq $uri } @$redirects) > 1 && !$self->{disable_loop_detection}) {
 		$self->process_error("Redirection Loop");
 		return;
 	} elsif (scalar(@$redirects) > 10) {
@@ -173,6 +173,13 @@ sub notice_redirects {
 			$self->notice($message);
 		}
 	}
+}
+
+# web form による認証後に同じ URI に戻ってくる際に、ループ検出を無効にするために使う。
+sub disable_loop_detection {
+	my($self) = @_;
+
+	$self->{disable_loop_detection} = 1;
 }
 
 ###############################################################################
