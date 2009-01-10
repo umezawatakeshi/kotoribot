@@ -9,11 +9,14 @@ use utf8;
 
 use Encode;
 use Encode::Guess;
+use HTTP::Cookies;
 use LWP;
 
 use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
+
+my $cookie_jar_obj = HTTP::Cookies->new();
 
 my $httpurlmatch = qr!https?://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
 
@@ -29,6 +32,7 @@ sub new {
 	$ua->timeout(10);
 	$ua->max_redirect(0);
 	$ua->max_size(32 * 1024); # 32KB
+	$ua->cookie_jar($cookie_jar_obj);
 	$ua->agent(KotoriBot::Core->agent());
 	$self->{ua} = $ua;
 
