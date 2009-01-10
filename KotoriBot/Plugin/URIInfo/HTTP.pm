@@ -59,6 +59,11 @@ sub do_request {
 	my($self, $context, $req) = @_;
 
 	my $res = $self->{ua}->request($req);
+	$self->done_request($context, $res);
+}
+
+sub done_request {
+	my($self, $context, $res) = @_;
 
 	if ($res->code() !~ /^2/) {
 		my $location = $res->header("Location");
