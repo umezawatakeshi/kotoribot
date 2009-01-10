@@ -133,7 +133,7 @@ sub process_content {
 	my $uri = $redirects->[scalar(@$redirects)-1]->[0];
 	my $output = $uriinfo->lookup_output_plugin($uri, $ct);
 	if (defined($output)) {
-		$output->output_content($self, $content, $ct, $clen);
+		$output->output_content($self, $content, $ct, $clen, $uri);
 	} else {
 		$self->notice_redirects();
 		if (defined($clen)) {
