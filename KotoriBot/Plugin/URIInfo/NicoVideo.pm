@@ -90,6 +90,22 @@ sub output_content {
 
 		$context->notice_redirects();
 		$context->notice($parser->header("title") . " (" . scalar($parser->header("X-Meta-Keywords")) . ")");
+	} elsif ($uri =~ $livematch) {
+		my $parser = HTML::HeadParser->new();
+
+		$parser->parse($content);
+		$parser->eof();
+
+		my $start = "(取得失敗)";
+		my $owner = "(取得失敗)";
+		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d：\d\d)</strong> からスタートしています!) {
+			$start = $1;
+		}
+		if ($content =~ m!放送者:<strong class=\"nicopedia\">(.+)</strong>さん!) {
+			$owner = $1;
+		}
+		$context->notice_redirects();
+		$context->notice($parser->header("title") . " ($owner, $start 開始)");
 	} else {
 		$self->{html}->output_content($context, $content, $ct, $clen, $uri);
 	}
