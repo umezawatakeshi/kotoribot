@@ -52,6 +52,12 @@ sub transform_uri {
 	my($self, $context, $uri) = @_;
 
 	my $req = HTTP::Request->new("GET" , $uri);
+	$self->do_request($context, $req);
+}
+
+sub do_request {
+	my($self, $context, $req) = @_;
+
 	my $res = $self->{ua}->request($req);
 
 	if ($res->code() !~ /^2/) {
