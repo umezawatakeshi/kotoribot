@@ -105,6 +105,12 @@ sub credentials {
 	$self->{ua}->credentials($hostport, $realm, $user, $pass);
 }
 
+sub cookie_jar {
+	my($self, $jar) = @_;
+
+	return $self->{ua}->cookie_jar($jar);
+}
+
 ###############################################################################
 
 return 1;
