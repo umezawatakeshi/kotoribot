@@ -16,7 +16,7 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $cookie_jar_obj = HTTP::Cookies->new();
+my $cookie_jar_obj = HTTP::Cookies->new( file => "cookies.txt" );
 
 my $httpurlmatch = qr!https?://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
 
@@ -64,6 +64,8 @@ sub do_request {
 
 sub done_request {
 	my($self, $context, $res) = @_;
+
+	$cookie_jar_obj->save();
 
 	if ($res->code() !~ /^2/) {
 		my $location = $res->header("Location");
@@ -121,9 +123,9 @@ sub credentials {
 }
 
 sub cookie_jar {
-	my($self, $jar) = @_;
+	my($self) = @_;
 
-	return $self->{ua}->cookie_jar($jar);
+	return $self->{ua}->cookie_jar();
 }
 
 ###############################################################################
