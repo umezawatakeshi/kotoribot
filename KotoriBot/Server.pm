@@ -52,8 +52,26 @@ sub _start {
 sub irc_connected {
 }
 
-sub do_join($) {
-	my($self, $channelname_encoded) = @_;
+sub join_channel {
+	my($self, $channelname) = @_;
+	my $irc = $self->{irc};
+
+	my $channelhash;
+	foreach my $ch (@{$self->{hash}->{channels}}) {
+		if ($channelname eq $ch->{name}) {
+			$channelhash = $ch;
+			last;
+		}
+	}
+	$channelhash = $self->{hash}->{default_channel};
+
+	my @args = (Encode::encode($channelhash->{encoding}, $channelname));
+	push(@args, $channelhash->{password}) if ($channelhash && $channelhash->{password});
+	$irc->yield("join", @args);
+}
+
+sub join_channel_encoded {
+	my($self, $channelname_encoded, $require_config) = @_;
 	my $irc = $self->{irc};
 
 	my $channelhash;
@@ -63,6 +81,8 @@ sub do_join($) {
 			last;
 		}
 	}
+
+	return if (!defined($channelhash) && $require_config);
 
 	my @args = ($channelname_encoded);
 	push(@args, $channelhash->{password}) if ($channelhash && $channelhash->{password});
@@ -77,7 +97,7 @@ sub irc_001 {
 		my $channelname = $channelhash->{name};
 		my $channelname_encoded = Encode::encode($channelhash->{encoding}, $channelname);
 		$self->{channelname_map}->{$channelname_encoded} = $channelname;
-		$self->do_join($channelname_encoded);
+		$self->join_channel_encoded($channelname_encoded);
 	}
 }
 
@@ -215,7 +235,7 @@ sub irc_invite {
 	my $irc = $self->{irc};
 
 	if ($self->{hash}->{accept_invite}) {
-		$self->do_join($channelname_encoded);
+		$self->join_channel_encoded($channelname_encoded, $self->{hash}->{accept_invite} != 1);
 	}
 }
 

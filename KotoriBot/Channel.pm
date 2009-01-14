@@ -77,7 +77,7 @@ sub on_my_kick($$) {
 	}
 
 	if ($self->{hash}->{persist}) {
-		$self->{server}->do_join($self->{name_encoded});
+		$self->{server}->join_channel_encoded($self->{name_encoded});
 	}
 }
 
