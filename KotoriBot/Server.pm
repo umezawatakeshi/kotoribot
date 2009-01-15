@@ -53,7 +53,7 @@ sub irc_connected {
 }
 
 sub join_channel {
-	my($self, $channelname) = @_;
+	my($self, $channelname, $password) = @_;
 	my $irc = $self->{irc};
 
 	my $channelhash;
@@ -66,7 +66,11 @@ sub join_channel {
 	$channelhash = $self->{hash}->{default_channel};
 
 	my @args = (Encode::encode($channelhash->{encoding}, $channelname));
-	push(@args, $channelhash->{password}) if ($channelhash && $channelhash->{password});
+	if (defined($password)) {
+		push(@args, $password);
+	} elsif ($channelhash && $channelhash->{password}) {
+		push(@args, $channelhash->{password});
+	}
 	$irc->yield("join", @args);
 }
 
