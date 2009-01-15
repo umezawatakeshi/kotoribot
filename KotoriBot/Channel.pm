@@ -185,6 +185,7 @@ sub part() {
 }
 
 # このチャンネルから退出してすぐ参加する。
+# 参加するのに何かしらの条件が必要なチャンネルでは、参加に失敗する可能性がある。
 # 返り値は不定である。
 sub rejoin() {
 	my($self) = @_;
@@ -214,24 +215,34 @@ sub plugin {
 	return undef;
 }
 
+# このチャンネルに参加している人の nick を返す。
+# 返り値は文字列のリストである。
 sub nicks {
 	my($self) = @_;
 
 	return $self->{server}->irc()->channel_list($self->{name_encoded});
 }
 
+# このチャンネルでモードを設定する。
+# 引数は設定するモードと（必要なら）モードに対する引数である。
+# 返り値は不定である。
 sub mode {
 	my($self, @param) = @_;
 
 	$self->{server}->irc()->yield("mode", $self->{name_encoded}, @param);
 }
 
+# このチャンネルにおいて、bot がオペレータ権限を持っているかどうかを返す。
+# 返り値はブール値である。
 sub am_operator {
 	my($self) = @_;
 
 	return $self->is_operator($self->{server}->irc()->nick_name());
 }
 
+# このチャンネルにおいて、指定した nick の人がオペレータ権限を持っているかどうかを返す。
+# 引数は文字列である。
+# 返り値はブール値である。
 sub is_operator {
 	my($self, $nick) = @_;
 
