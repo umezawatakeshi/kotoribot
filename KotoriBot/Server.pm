@@ -111,6 +111,8 @@ sub irc_disconnected {
 
 	print STDERR "$self irc_disconnected\n";
 
+	$self->cleanup_channels();
+
 	$_[KERNEL]->delay("reconnect", 10);
 }
 
@@ -119,6 +121,9 @@ sub irc_socketerr {
 	my $irc = $self->{irc};
 
 	print "$self irc_socketerr\n";
+
+	$self->cleanup_channels();
+
 	if ($irc->connected()) {
 		$irc->yield("disconnect");
 	} else {
@@ -219,18 +224,23 @@ sub irc_quit {
 	my $nick = (split(/!/, $who))[0];
 
 	if ($nick eq $irc->nick_name()) {
-		foreach my $channelname_encoded (@$channelnames_encoded) {
-			my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
-			$channel->on_my_quit();
-			$channel->destroy();
-			delete($self->{channels}->{$self->{channelname_map}->{$channelname_encoded}});
-		}
+		$self->cleanup_channels();
 	} else {
 		foreach my $channelname_encoded (@$channelnames_encoded) {
 			my $channel = $self->{channels}->{$self->{channelname_map}->{$channelname_encoded}};
 			$channel->on_quit($who, $message_encoded);
 		}
 	}
+}
+
+sub cleanup_channels {
+	my($self) = @_;
+
+	foreach my $channel (values(%{$self->{channels}})) {
+		$channel->on_my_quit();
+		$channel->destroy();
+	}
+	$self->{channels} = {};
 }
 
 sub irc_invite {
