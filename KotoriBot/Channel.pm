@@ -176,6 +176,15 @@ sub notice($;$) {
 	);
 }
 
+# このチャンネルに notice でエラーメッセージを送信する。
+# 引数は UTF-8 フラグ付き文字列である。
+# 返り値は不定である。
+sub notice_error {
+	my($self, $message) = @_;
+
+	$self->notice("\x034Error:\x03 $message");
+}
+
 # このチャンネルから退出する。
 # 返り値は不定である。
 sub part() {
