@@ -96,16 +96,16 @@ sub output_content {
 		$parser->parse($content);
 		$parser->eof();
 
-		my $start;
-		my $owner;
+		my @annotation;
+		if ($content =~ m!放送者:<strong class=\"nicopedia\">(.+)</strong>さん!) {
+			push(@annotation, $1);
+		}
 		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d：\d\d)</strong> からスタートしています!) {
-			$start = $1;
-			$content =~ m!放送者:<strong class=\"nicopedia\">(.+)</strong>さん!;
-			$owner = $1;
+			push(@annotation, "$1 開始");
 		}
 		$context->notice_redirects();
-		if (defined($start)) {
-			$context->notice($parser->header("title") . " ($owner, $start 開始)");
+		if (scalar(@annotation) > 0) {
+			$context->notice($parser->header("title") . " (" . join(", ", @annotation) . ")");
 		} else {
 			$context->notice($parser->header("title"));
 		}
