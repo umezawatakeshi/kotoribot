@@ -18,8 +18,10 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	while ($message =~ /\b([sc]?dice):(\d*)d(\d*)\b/ig) {
+	while ($message =~ /\b(|s|c|sc)dice:(\d*)d(\d*)\b/ig) {
 		my($type, $numdice, $faces) = ($1, $2, $3);
+		my $needsort = $type =~ /s/;
+		my $combination = $type =~ /c/;
 
 		if ($numdice eq "") { $numdice = 1; }
 		if ($faces eq "") { $faces = 6; }
@@ -28,8 +30,8 @@ sub on_public($$) {
 
 		if ($numdice > 20) {
 			$channel->notice_error("Too many dice.");
-		} elsif ($type eq "cdice" && $numdice > $faces) {
-			$channel->notice_error("Dice must not be more than faces for cdice.");
+		} elsif ($combination && $numdice > $faces) {
+			$channel->notice_error("Dice must not be more than faces for cdice/scdice.");
 		} else {
 			my $msg;
 			my $total = 0;
@@ -37,11 +39,11 @@ sub on_public($$) {
 
 			for (my $i = 0; $i < $numdice; $i++) {
 				my $thisdice = int(rand($faces)) + 1;
-				redo if ($type eq "cdice" && scalar(grep { $_ == $thisdice } @nums) > 0); # 手抜き
+				redo if ($combination && scalar(grep { $_ == $thisdice } @nums) > 0); # 手抜き
 				push(@nums, $thisdice);
 				$total += $thisdice;
 			}
-			if ($type eq "sdice" || $type eq "cdice") {
+			if ($needsort) {
 				@nums = sort { $a <=> $b } @nums;
 			}
 
