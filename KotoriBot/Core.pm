@@ -12,7 +12,7 @@ use KotoriBot::Server;
 sub rec_print($$);
 sub expand_serverhash($);
 
-sub version { return "1.8.0"; }
+sub version { return "1.9.0"; }
 
 sub longversion { return "KotoriBot " . version(); }
 
