@@ -53,6 +53,12 @@ sub output_content {
 
 	# ログインフォームが含まれるかどうか
 	if (defined($auth_mail) && $content =~ m!\<form [^<>]*action=\"https://secure.nicovideo.jp/secure/login!) {
+		# 一度ログインを試行したにも関わらずログインフォームが出てくる場合はログインに失敗している。
+		if ($context->{"KotoriBot::Plugin::URIInfo::NicoVideo"}->{login}) {
+			$context->process_error("ログインに失敗しました。");
+			return;
+		}
+
 		$context->notice("ニコニコ動画にログインしています...");
 
 		my %addparam;
@@ -78,6 +84,7 @@ sub output_content {
 		);
 		# 認証が成功したら同じ URL にリダイレクトされるので、ループ検出は無効にする。
 		$context->disable_loop_detection();
+		$context->{"KotoriBot::Plugin::URIInfo::NicoVideo"}->{login} = 1;
 		$self->{http}->do_request($context, $req);
 		return;
 	}
