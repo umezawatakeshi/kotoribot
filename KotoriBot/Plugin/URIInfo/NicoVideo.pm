@@ -106,15 +106,25 @@ sub output_content {
 		my @annotation;
 		if ($content =~ m!放送者:<strong class=\"nicopedia\">(.+)</strong>さん!) {
 			push(@annotation, $1);
+		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(.+)</span>さん!) {
+			push(@annotation, $1);
 		}
-		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d：\d\d)</strong> からスタートしています!) {
-			push(@annotation, "$1 開始");
+		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong> からスタートしています!) {
+			push(@annotation, "$1:$2 開始");
+		} elsif ($content =~ m!<p class=\"date\">\s*(\d\d月\d\d日)\s*<br>\s*開演：(\d\d:\d\d)!s) {
+			push(@annotation, "$1 $2 開始予定");
 		}
+
+		my $title = $parser->header("title");
+		if ($content =~ m!<h2 class=\"ttl\">([^<]+)</h2>!) {
+			$title = "$1 - $title";
+		}
+
 		$context->notice_redirects();
 		if (scalar(@annotation) > 0) {
-			$context->notice($parser->header("title") . " (" . join(", ", @annotation) . ")");
+			$context->notice($title . " (" . join(", ", @annotation) . ")");
 		} else {
-			$context->notice($parser->header("title"));
+			$context->notice($title);
 		}
 	} else {
 		$self->{html}->output_content($context, $content, $ct, $clen, $uri);
