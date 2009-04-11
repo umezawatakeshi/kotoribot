@@ -22,7 +22,7 @@ my $langhostmatch = qr!http://(tw|es|de)\.nicovideo\.jp/!;
 my $livehostmatch = qr!http://live\.nicovideo\.jp/!;
 
 my $watchmatch = qr!http://(?:www|tw|es|de)\.nicovideo\.jp/watch/..\d+!;
-my $livematch = qr!http://live\.nicovideo\.jp/watch/..\d+!;
+my $livematch = qr!http://live\.nicovideo\.jp/(?:watch|gate)/..\d+!;
 
 # パスワードファイルをチェック。
 # あまりイケてる方法ではないように思える。
