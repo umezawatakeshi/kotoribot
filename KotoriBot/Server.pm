@@ -16,7 +16,15 @@ use KotoriBot::Channel;
 sub new($) {
 	my($class, $hash) = @_;
 
-	my $irc = KotoriBot::IRC->spawn();
+	my $ircclass;
+	if (exists($hash->{ircclass})) {
+		$ircclass = $hash->{ircclass};
+	} else {
+		$ircclass = "KotoriBot::IRC";
+	}
+
+	eval "require $ircclass"; if ($@) { die $@; }
+	my $irc = $ircclass->spawn();
 
 	my $self = bless({
 		hash => $hash,
