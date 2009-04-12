@@ -112,7 +112,9 @@ sub output_content {
 		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong> からスタートしています!) {
 			push(@annotation, "$1:$2 開始");
 		} elsif ($content =~ m!<p class=\"date\">\s*(\d\d月\d\d日)\s*<br>\s*開演：(\d\d:\d\d)!s) {
-			push(@annotation, "$1 $2 開始予定");
+			push(@annotation, "$1 $2 開演予定");
+		} elsif ($content =~ m!<p class=\"date\">\s*(\d\d月\d\d日)\s*<br>\s*開場：(\d\d:\d\d)\s*開演：(\d\d:\d\d)!s) {
+			push(@annotation, "$1 $2 開場予定 $3 開演予定");
 		}
 
 		my $title = $parser->header("title");
