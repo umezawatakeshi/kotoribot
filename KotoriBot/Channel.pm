@@ -156,6 +156,21 @@ sub name() {
 	return $self->{name};
 }
 
+sub notice_or_public($;$) {
+	my($self, $type, $message, $altmessage) = @_;
+
+	if (!defined($message) || $message eq "") {
+		$message = $altmessage;
+	}
+	return if (!defined($message) || $message eq "");
+
+	$self->{server}->irc()->yield(
+		$type,
+		$self->{name_encoded},
+		Encode::encode($self->{hash}->{encoding}, $message, Encode::FB_PERLQQ)
+	);
+}
+
 # このチャンネルに notice でメッセージを送信する。
 # 引数は UTF-8 フラグ付き文字列である。
 # 1つ目の引数が undef もしくは空文字列の場合は、2つ目の引数を送信する。
@@ -164,16 +179,15 @@ sub name() {
 sub notice($;$) {
 	my($self, $message, $altmessage) = @_;
 
-	if (!defined($message) || $message eq "") {
-		$message = $altmessage;
-	}
-	return if (!defined($message) || $message eq "");
+	return $self->notice_or_public("notice", $message, $altmessage);
+}
 
-	$self->{server}->irc()->yield(
-		"notice",
-		$self->{name_encoded},
-		Encode::encode($self->{hash}->{encoding}, $message, Encode::FB_PERLQQ)
-	);
+# このチャンネルに public でメッセージを送信する。
+# 引数等は notice と同じである。
+sub public {
+	my($self, $message, $altmessage) = @_;
+
+	return $self->notice_or_public("privmsg", $message, $altmessage);
 }
 
 # このチャンネルに notice でエラーメッセージを送信する。
