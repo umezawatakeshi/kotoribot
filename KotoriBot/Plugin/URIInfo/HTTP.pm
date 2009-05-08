@@ -31,6 +31,7 @@ sub new {
 	my $ua = LWP::UserAgent->new();
 	$ua->timeout(10);
 	$ua->max_redirect(0);
+	$ua->requests_redirectable([]);
 	$ua->max_size(32 * 1024); # 32KB
 	$ua->cookie_jar($cookie_jar_obj);
 	$ua->agent(KotoriBot::Core->agent());
@@ -59,17 +60,21 @@ sub do_request {
 	my($self, $context, $req) = @_;
 
 	my $res = $self->{ua}->request($req);
-	$self->done_request($context, $res);
+	$self->done_request($context, $res, $req);
 }
 
 sub done_request {
-	my($self, $context, $res) = @_;
+	my($self, $context, $res, $req) = @_;
 
 	$cookie_jar_obj->save();
 
 	if ($res->code() !~ /^2/) {
 		my $location = $res->header("Location");
 		if ($location) {
+			if ($location =~ m!^/!) {
+				$req->uri =~ m!^(https?://[^/]+)/!;
+				$location = "$1$location";
+			}
 			$context->process_redirect($location, "HTTP " . $res->status_line());
 		} else {
 			$context->process_error($res->status_line());
