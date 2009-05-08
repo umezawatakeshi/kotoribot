@@ -26,9 +26,6 @@ sub initialize {
 sub transform_uri {
 	my($self, $context, $uri) = @_;
 
-	my $keyword;
-	my $fladd = "";
-
 	$uri =~ $match;
 
 	if ($1 eq "isbn") {
