@@ -1,5 +1,5 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
-# $Id: Google.pm 117 2009-01-19 18:37:42Z umezawa $
+# $Id$
 
 package KotoriBot::Plugin::URIInfo::ISBN::Amazon;
 
