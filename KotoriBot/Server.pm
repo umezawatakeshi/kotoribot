@@ -75,9 +75,9 @@ sub join_channel {
 
 	my @args = (Encode::encode($channelhash->{encoding}, $channelname));
 	if (defined($password)) {
-		push(@args, $password);
+		push(@args, Encode::encode($channelhash->{encoding}, $password));
 	} elsif ($channelhash && $channelhash->{password}) {
-		push(@args, $channelhash->{password});
+		push(@args, Encode::encode($channelhash->{encoding}, $channelhash->{password}));
 	}
 	$irc->yield("join", @args);
 }
@@ -97,7 +97,7 @@ sub join_channel_encoded {
 	return if (!defined($channelhash) && $require_config);
 
 	my @args = ($channelname_encoded);
-	push(@args, $channelhash->{password}) if ($channelhash && $channelhash->{password});
+	push(@args, Encode::encode($channelhash->{encoding}, $channelhash->{password})) if ($channelhash && $channelhash->{password});
 	$irc->yield("join", @args);
 }
 
