@@ -27,7 +27,10 @@ sub check_deal {
 
 	if (scalar($channel->nicks()) == 2 && $channel->am_operator()) {
 		my @nicks = grep { $_ ne $channel->server->irc->nick_name } $channel->nicks();
-		$channel->mode("+o", $nicks[0]);
+		my $nick = $nicks[0];
+		if (!$channel->is_operator($nick)) {
+			$channel->mode("+o", $nick);
+		}
 	}
 }
 
