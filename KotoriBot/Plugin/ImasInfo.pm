@@ -96,6 +96,7 @@ for (my $i = 0; $i < scalar(@$list); $i++) {
 }
 
 $name_map->{"社長"} = $name_map->{"高木"};
+$name_map->{"高木社長"} = $name_map->{"高木"};
 $name_match = join("|", keys(%$name_map));
 $name_match = qr/$name_match/i;
 
