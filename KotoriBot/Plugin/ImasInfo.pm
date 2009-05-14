@@ -57,7 +57,7 @@ $param_match = join("|", keys(%$param_map));
 $param_match = qr/$param_match/i;
 
 
-my $list = [
+my $idollist = [
 	# 名字      f-name       名前,     g-name,    歳 身長  重  誕生日       血   乳  腰  尻     3S  趣味
 	[ "天海",   "amami",     "春香",   "haruka",  16, 158, 45, "4月3日",    "O", 83, 56, 80, undef, "おかし作り、カラオケ", "中村繪里子" ],
 	[ "如月",   "kisaragi",  "千早",   "chihaya", 15, 162, 41, "2月25日",   "A", 72, 55, 78, undef, "音楽鑑賞（クラシック）", "今井麻美" ],
@@ -79,8 +79,8 @@ my $list = [
 my $name_map = {};
 my $name_match;
 
-for (my $i = 0; $i < scalar(@$list); $i++) {
-	my $idol = $list->[$i];
+for (my $i = 0; $i < scalar(@$idollist); $i++) {
+	my $idol = $idollist->[$i];
 	$idol->[12] = "$idol->[9]-$idol->[10]-$idol->[11]";
 	$idol->[ 4] = "$idol->[ 4]歳" if $idol->[ 4] =~ /^\d+$/;
 	$idol->[ 5] = "$idol->[ 5]cm" if $idol->[ 5] =~ /^\d+$/;
@@ -138,7 +138,7 @@ sub on_public($$) {
 			my $paramname = $1;
 			my $paramidx = $param_map->{$paramname};
 			$paramname = $param_names[$paramidx];
-			foreach my $idol (@$list) {
+			foreach my $idol (@$idollist) {
 				my $fname = $idol->[0];
 				my $gname = $idol->[2];
 				my $paramval = $idol->[$paramidx];
@@ -150,7 +150,7 @@ sub on_public($$) {
 			my $paramval = $2;
 			my $paramidx = $param_map->{$paramname};
 			$paramname = $param_names[$paramidx];
-			foreach my $idol (@$list) {
+			foreach my $idol (@$idollist) {
 				if ($idol->[$paramidx] eq $paramval) {
 					my $fname = $idol->[0];
 					my $gname = $idol->[2];
