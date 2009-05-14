@@ -56,6 +56,7 @@ my $param_match;
 $param_match = join("|", keys(%$param_map));
 $param_match = qr/$param_match/i;
 
+my $nsuffix_match = qr/ちゃん|さん|くん|さま|君|様/;
 
 my $idollist = [
 	# 名字      f-name       名前,     g-name,    歳 身長  重  誕生日       血   乳  腰  尻     3S  趣味
@@ -108,10 +109,10 @@ sub on_public($$) {
 	while ($message =~ /\bimasinfo:(\S+)\b/ig) {
 		my $cmd = $1;
 
-		if (("と".$cmd."と") =~ /^((?:と$name_match(?:ちゃん|さん|くん|さま|君|様)?)+)の((?:(?:$param_match)と)+)$/) {
+		if (("と".$cmd."と") =~ /^((?:と$name_match(?:$nsuffix_match)?)+)の((?:(?:$param_match)と)+)$/) {
 			my $names = $1;
 			my $paramnames = $2;
-			while ($names =~ /と($name_match)(?:ちゃん|さん|くん|さま|君|様)?/g) {
+			while ($names =~ /と($name_match)(?:$nsuffix_match)?/g) {
 				my $name = lc($1);
 				my $idol = $name_map->{$name};
 				my $fname = $idol->[0];
@@ -124,7 +125,7 @@ sub on_public($$) {
 					$channel->notice("$fname$gname"."の"."$paramname = $paramval");
 				}
 			}
-		} elsif ($cmd =~ /^($name_match)(?:ちゃん|さん|くん|さま|君|様)?(?:の(?:すべて|ぜんぶ|全て|全部))?$/) {
+		} elsif ($cmd =~ /^($name_match)(?:$nsuffix_match)?(?:の(?:すべて|ぜんぶ|全て|全部))?$/) {
 			my $name = lc($1);
 			my $idol = $name_map->{$name};
 			my $fname = $idol->[0];
