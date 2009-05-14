@@ -15,7 +15,7 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	while ($message =~ /\b(\d+)勝(\d+)敗\b/ig) {
+	while ($message =~ /(\d+)勝(\d+)敗/ig) {
 		my $wins = $1;
 		my $lose = $2;
 
