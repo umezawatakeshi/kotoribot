@@ -100,7 +100,11 @@ sub done_request {
 			}
 
 			if (!defined($enc)) {
-				$enc = guess_encoding($content, @encoding_suspects);
+				eval {
+					$enc = guess_encoding($content, @encoding_suspects);
+				}; if ($@) {
+					print $@;
+				}
 				if (!ref($enc)) {
 					$enc = Encode::find_encoding("latin-1"); # guess 失敗。仕方ないので latin-1 にする。
 				}
