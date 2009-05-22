@@ -18,9 +18,10 @@ sub on_public($$) {
 	while ($message =~ /(\d+)勝(\d+)敗/ig) {
 		my $wins = $1;
 		my $lose = $2;
+		my $game = $wins + $lose;
 
-		if ($wins + $lose > 0) {
-			$channel->notice(sprintf("勝率 %4.2f%%", $wins * 100.0 / ($wins + $lose)));
+		if ($game > 0) {
+			$channel->notice(sprintf("%d戦%d勝%d敗 勝率%4.2f%%", $game, $wins, $lose, $wins * 100.0 / $game));
 		}
 	}
 }
