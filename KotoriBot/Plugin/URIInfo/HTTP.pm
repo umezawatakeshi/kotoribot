@@ -22,6 +22,7 @@ my $httpurlmatch = qr!https?://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!
 
 # 本来は設定ファイルで設定できるようにするべき。
 my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
+my $encoding_fallback = "utf-8";
 
 sub new {
 	my($class, $channel) = @_;
@@ -106,7 +107,7 @@ sub done_request {
 					print STDERR $@;
 				}
 				if (!ref($enc)) {
-					$enc = Encode::find_encoding("latin-1"); # guess 失敗。仕方ないので latin-1 にする。
+					$enc = Encode::find_encoding($encoding_fallback); # guess 失敗。
 				}
 			}
 
