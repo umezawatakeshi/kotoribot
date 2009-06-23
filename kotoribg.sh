@@ -4,5 +4,5 @@
 
 cd $(dirname $0)
 
-nohup ./kotoriloop.sh >/dev/null &
+nohup ./kotoriloop.sh "$@" >/dev/null &
 sleep 1
