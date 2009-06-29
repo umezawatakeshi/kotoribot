@@ -15,9 +15,10 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	if ($message =~ /ようむ/) {
+	if ($message =~ /よ[うー]む/) {
+		my $wrong = $&;
 		if (!defined($self->{prevtime}) || $self->{prevtime} < time() - 20) {
-			$channel->notice("ようむ じゃないよ！ ゆーむ だよ！");
+			$channel->notice("$wrong じゃないよ！ ゆーむ だよ！");
 		}
 		$self->{prevtime} = time();
 	}
