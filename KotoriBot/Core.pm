@@ -52,6 +52,10 @@ sub expand_serverhash($) {
 	$sh->{channels} = [] unless exists $sh->{channels};
 	my $dch = $sh->{default_channel};
 	foreach my $ch (@{$sh->{channels}}) {
+		if (ref($ch) eq "") {
+			# $ch が単なる文字列だった場合、チャンネル名として扱う。
+			$ch = { name => $ch }; # $ch を変更すると @{$sh->{channels}} の中身が変わる
+		}
 		$ch->{persist} = 1 unless exists $ch->{persist};
 		set_default($ch, $dch, "encoding");
 		set_default($ch, $dch, "lang");
