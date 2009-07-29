@@ -56,7 +56,7 @@ my $param_match;
 $param_match = join("|", keys(%$param_map));
 $param_match = qr/$param_match/i;
 
-my $nsuffix_match = qr/ちゃん|さん|くん|さま|君|様/;
+my $nsuffix_match = qr/ちゃん|さん|くん|さま|ちん|君|様/;
 
 my $idollist = [
 	# 名字      f-name       名前,     g-name,    歳 身長  重  誕生日       血   乳  腰  尻     3S  趣味
