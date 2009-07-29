@@ -20,7 +20,10 @@ sub on_public($$) {
 		if ($message eq "\\pluginl") {
 			$channel->notice($_) foreach @pluginnames;
 		} else {
-			$channel->notice(join(" ", map { s/^KotoriBot::Plugin:://; $_; } @pluginnames));
+			my @names = map { s/^KotoriBot::Plugin:://; $_; } @pluginnames;
+			while (scalar(@names) > 0) {
+				$channel->notice(join(" ", splice(@names, 0, 10)));
+			}
 		}
 		$channel->notice("total ".scalar(@pluginnames)." plugins");
 	} elsif ($message =~ /^\\version$/) {
