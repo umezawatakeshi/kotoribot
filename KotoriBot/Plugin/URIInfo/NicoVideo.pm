@@ -51,9 +51,11 @@ sub initialize {
 sub output_content {
 	my($self, $context, $content, $ct, $clen, $uri) = @_;
 
-	# ログインフォームが含まれるかどうか
-	if (defined($auth_mail) && $content =~ m!\<form [^<>]*action=\"https://secure.nicovideo.jp/secure/login!) {
-		# 一度ログインを試行したにも関わらずログインフォームが出てくる場合はログインに失敗している。
+	# ログインフォームあるいはそのリンクが含まれるかどうか
+	if (defined($auth_mail) &&
+			($content =~ m!\<form [^<>]*action=\"https://secure.nicovideo.jp/secure/login! ||
+			 $content =~ m!\<a [^<>]*href=\"https://secure.nicovideo.jp/secure/login_form!)) {
+		# 一度ログインを試行したにも関わらず出てくる場合はログインに失敗している。
 		if ($context->{"KotoriBot::Plugin::URIInfo::NicoVideo"}->{login}) {
 			$context->process_error("ログインに失敗しました。");
 			return;
@@ -70,7 +72,7 @@ sub output_content {
 			$addparam{next_url} = "/$'";
 			$addparam{site} = "$1niconico";
 		} elsif ($uri =~ $livehostmatch) {
-			$addparam{next_url} = "/$'";
+			$addparam{next_url} = "$'";
 			$addparam{site} = "nicolive";
 		}
 
@@ -109,16 +111,16 @@ sub output_content {
 		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(.+)</span>さん!) {
 			push(@annotation, $1);
 		}
-		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong> からスタートしています!) {
+		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong>  からスタートしています!) {
 			push(@annotation, "$1:$2 開始");
-		} elsif ($content =~ m!<p class=\"date\">\s*(\d\d月\d\d日)\s*<br>\s*開演：(\d\d:\d\d)!s) {
+		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
 			push(@annotation, "$1 $2 開演予定");
-		} elsif ($content =~ m!<p class=\"date\">\s*(\d\d月\d\d日)\s*<br>\s*開場：(\d\d:\d\d)\s*開演：(\d\d:\d\d)!s) {
+		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開場：<strong>(\d\d:\d\d)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
 			push(@annotation, "$1 $2 開場予定 $3 開演予定");
 		}
 
 		my $title = $parser->header("title");
-		if ($content =~ m!<h2 class=\"ttl\">([^<]+)</h2>!) {
+		if ($content =~ m!<h2 class=\"\">([^<]+)</h2>!) {
 			$title = "$1 - $title";
 		}
 
