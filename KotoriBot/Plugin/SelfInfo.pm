@@ -28,6 +28,8 @@ sub on_public($$) {
 		$channel->notice("total ".scalar(@pluginnames)." plugins");
 	} elsif ($message =~ /^\\version$/) {
 		$channel->notice(KotoriBot::Core->longversion());
+	} elsif ($message =~ /^\\instanceid$/) {
+		$channel->notice(KotoriBot::Core->instanceid());
 	}
 }
 
