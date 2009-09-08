@@ -137,6 +137,16 @@ sub on_public($$) {
 	}
 }
 
+sub on_notice($$) {
+	my($self, $who, $message_encoded) = @_;
+
+	my $message = Encode::decode($self->{hash}->{encoding}, $message_encoded);
+
+	foreach my $plugin (@{$self->{plugins}}) {
+		$plugin->on_notice($who, $message);
+	}
+}
+
 ###############################################################################
 #### 各種オブジェクトメソッド
 

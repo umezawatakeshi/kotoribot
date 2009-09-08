@@ -35,7 +35,7 @@ sub new($) {
 
 	POE::Session->create(
 		object_states => [
-			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_quit irc_invite irc_public) ],
+			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_quit irc_invite irc_public irc_notice) ],
 		],
 		heap => {}
 	);
@@ -270,6 +270,18 @@ sub irc_public {
 		my $channelname = $self->{channelname_map}->{$channelname_encoded};
 		next unless $channelname;
 		$self->{channels}->{$channelname}->on_public($who, $message_encoded);
+	}
+}
+
+sub irc_notice {
+	my($who, $channelnames_encoded, $message_encoded) = @_[ARG0, ARG1, ARG2];
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	foreach my $channelname_encoded (@$channelnames_encoded) {
+		my $channelname = $self->{channelname_map}->{$channelname_encoded};
+		next unless $channelname;
+		$self->{channels}->{$channelname}->on_notice($who, $message_encoded);
 	}
 }
 

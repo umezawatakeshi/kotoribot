@@ -55,6 +55,9 @@ sub on_quit {}
 # チャンネルの発言を受信した。
 sub on_public($$) {}
 
+# チャンネルのnoticeを受信した。
+sub on_notice($$) {}
+
 
 # PluginHelp プラグインで使われるヘルプ文字列を返す。
 sub helpstring { return undef; }
