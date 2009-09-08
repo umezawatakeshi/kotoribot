@@ -35,7 +35,7 @@ sub new($) {
 
 	POE::Session->create(
 		object_states => [
-			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_quit irc_invite irc_public irc_notice) ],
+			$self => [ qw(_default _start irc_001 irc_disconnected irc_socketerr reconnect irc_join irc_part irc_kick irc_quit irc_invite irc_public irc_notice irc_ctcp_version) ],
 		],
 		heap => {}
 	);
@@ -283,6 +283,14 @@ sub irc_notice {
 		next unless $channelname;
 		$self->{channels}->{$channelname}->on_notice($who, $message_encoded);
 	}
+}
+
+sub irc_ctcp_version {
+	my($who, $arg1, $arg2) = @_[ARG0, ARG1, ARG2];
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	$irc->yield("ctcpreply", $who, KotoriBot::Core->longversion());
 }
 
 sub _default {
