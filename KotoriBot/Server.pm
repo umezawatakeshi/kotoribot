@@ -290,7 +290,7 @@ sub irc_ctcp_version {
 	my $self = $_[OBJECT];
 	my $irc = $self->{irc};
 
-	$irc->yield("ctcpreply", $who, KotoriBot::Core->longversion());
+	$irc->yield("ctcpreply", $who, "version", KotoriBot::Core->longversion());
 }
 
 sub _default {
