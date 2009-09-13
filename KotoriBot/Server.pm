@@ -36,7 +36,7 @@ sub new($) {
 	POE::Session->create(
 		object_states => [
 			$self => [ qw(
-				_default _start irc_001 irc_disconnected irc_socketerr reconnect
+				_default _start irc_001 irc_disconnected irc_socketerr reconnect tick
 				irc_join irc_part irc_kick irc_quit irc_invite
 				irc_public irc_notice
 				irc_ctcp_ping irc_ctcp_version
@@ -60,6 +60,9 @@ sub _start {
 
 	$irc->yield("register", "all");
 	$irc->yield("connect", $self->{hash}->{connect});
+
+	shift;
+	$self->tick(@_);
 }
 
 sub irc_connected {
@@ -104,6 +107,17 @@ sub join_channel_encoded {
 	my @args = ($channelname_encoded);
 	push(@args, Encode::encode($channelhash->{encoding}, $channelhash->{password})) if ($channelhash && $channelhash->{password});
 	$irc->yield("join", @args);
+}
+
+sub tick {
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	if ($irc->connected()) {
+		$irc->yield("ping", $irc->server_name());
+	}
+
+	POE::Kernel->delay("tick", 30);
 }
 
 sub irc_001 {
