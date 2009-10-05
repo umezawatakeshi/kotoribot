@@ -152,7 +152,7 @@ sub irc_socketerr {
 	$self->cleanup_channels();
 
 	if ($irc->connected()) {
-		$irc->yield("disconnect");
+		$irc->disconnect();
 	} else {
 		$_[KERNEL]->delay("reconnect", 10);
 	}
