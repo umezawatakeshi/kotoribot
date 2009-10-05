@@ -37,6 +37,7 @@ sub new($) {
 		object_states => [
 			$self => [ qw(
 				_default _start irc_001 irc_disconnected irc_socketerr reconnect tick
+				irc_pong
 				irc_join irc_part irc_kick irc_quit irc_invite
 				irc_public irc_notice
 				irc_ctcp_ping irc_ctcp_version
@@ -114,15 +115,30 @@ sub tick {
 	my $irc = $self->{irc};
 
 	if ($irc->connected()) {
-		$irc->yield("ping", $irc->server_name());
+		$self->{noresp}++;
+		if ($self->{noresp} > 6) {
+			print STDERR "server not responding\n";
+			$irc->disconnect();
+		} else {
+			$irc->yield("ping", $irc->server_name());
+		}
 	}
 
 	POE::Kernel->delay("tick", 30);
 }
 
+sub irc_pong {
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	$self->{noresp} = 0;
+}
+
 sub irc_001 {
 	my $self = $_[OBJECT];
 	my $irc = $self->{irc};
+
+	$self->{noresp} = 0;
 
 	foreach my $channelhash (@{$self->{hash}->{channels}}) {
 		my $channelname = $channelhash->{name};
