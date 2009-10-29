@@ -32,7 +32,7 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	if ($message =~ /^gcalc:(.*)$/) {
+	if ($message =~ /^\s*gcalc:(.*)$/) {
 		my $expr = $1;
 
 		$expr = Encode::encode("utf-8", $expr);

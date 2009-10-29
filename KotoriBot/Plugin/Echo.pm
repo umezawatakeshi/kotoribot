@@ -15,7 +15,7 @@ sub on_public($$) {
 	my($self, $who, $message) = @_;
 	my $channel = $self->{channel};
 
-	if ($message =~ /^(echo|public|notice):(.*)$/i) {
+	if ($message =~ /^\s*(echo|public|notice):(.*)$/i) {
 		my($type, $msg) = ($1, $2);
 
 		if ($type eq "notice") {
