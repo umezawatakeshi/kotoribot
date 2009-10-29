@@ -16,7 +16,7 @@ sub expand_serverhash($);
 
 my $instanceid = md5_hex(time() . " " . `uname -a`); # /dev/urandom も読むべきか。
 
-sub version { return "1.12.1"; }
+sub version { return "1.13.0"; }
 sub longversion { return "KotoriBot " . version(); }
 sub agent { return "KotoriBot/" . version(); }
 sub instanceid { return $instanceid; }
