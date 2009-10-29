@@ -106,9 +106,9 @@ sub output_content {
 		$parser->eof();
 
 		my @annotation;
-		if ($content =~ m!放送者:<strong class=\"nicopedia\">(.+)</strong>さん!) {
+		if ($content =~ m!放送者:<strong class=\"nicopedia\">(?:<a href=\"[^>]*?>)?([^<]+?)(?:</a>)?</strong>さん!) {
 			push(@annotation, $1);
-		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(.+)</span>さん!) {
+		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(?:<a href=\"[^>]*?>)?([^<]+?)(?:</a>)?</span>さん!) {
 			push(@annotation, $1);
 		}
 		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong>  からスタートしています!) {
