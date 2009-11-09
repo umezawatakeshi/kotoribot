@@ -210,11 +210,17 @@ sub notice_error {
 }
 
 # このチャンネルから退出する。
+# 引数は UTF-8 フラグ付き文字列である。
 # 返り値は不定である。
 sub part() {
-	my($self) = @_;
+	my($self, $message) = @_;
 
-	$self->{server}->irc()->yield("part", $self->{name_encoded});
+	my $ircmsg = "PART " . $self->{name_encoded};
+	if (defined($message)) {
+		$ircmsg .= " " . Encode::encode($self->{hash}->{encoding}, $message, Encode::FB_PERLQQ);
+	}
+
+	$self->{server}->irc()->yield("sl_high", $ircmsg);
 }
 
 # このチャンネルから退出してすぐ参加する。
