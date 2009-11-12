@@ -9,6 +9,8 @@ use utf8;
 
 use HTML::HeadParser;
 use HTTP::Request::Common;
+use XML::DOM;
+use XML::DOM::XPath;
 
 use KotoriBot::Plugin;
 
@@ -21,8 +23,9 @@ my $wwwhostmatch = qr!http://www\.nicovideo\.jp/!;
 my $langhostmatch = qr!http://(tw|es|de)\.nicovideo\.jp/!;
 my $livehostmatch = qr!http://live\.nicovideo\.jp/!;
 
-my $watchmatch = qr!http://(?:www|tw|es|de)\.nicovideo\.jp/watch/..\d+!;
+my $watchmatch = qr!http://(?:www|tw|es|de)\.nicovideo\.jp/watch/(..\d+)!;
 my $livematch = qr!http://live\.nicovideo\.jp/(?:watch|gate)/..\d+!;
+my $thumbinfomatch = qr!http://ext\.nicovideo\.jp/api/getthumbinfo/(..\d+)!;
 
 # パスワードファイルをチェック。
 # あまりイケてる方法ではないように思える。
@@ -38,7 +41,9 @@ sub initialize {
 
 	my $uriinfo = $channel->plugin("KotoriBot::Plugin::URIInfo");
 	if ($uriinfo) {
-		$uriinfo->add_output_plugin($self, qr!http://(?:www|live|tw|es|de)\.nicovideo\.jp/.*!, qr!(?:text|application)/x?html(?:\+xml)?!);
+		$uriinfo->add_transform_plugin($self, $watchmatch);
+		$uriinfo->add_output_plugin($self, qr!http://(?:www|live|tw|es|de|ext)\.nicovideo\.jp/.*!, qr!(?:text|application)/x?html(?:\+xml)?!);
+		$uriinfo->add_output_plugin($self, $watchmatch, qr!(?:text|application)/xml!);
 	}
 
 	my $http = $channel->plugin("KotoriBot::Plugin::URIInfo::HTTP");
@@ -48,8 +53,23 @@ sub initialize {
 	$self->{html} = $html;
 }
 
+sub transform_uri {
+	my($self, $context, $uri) = @_;
+
+	if ($uri =~ /$watchmatch/) {
+		my $movid = $1;
+		my $req = HTTP::Request::Common::GET("http://ext.nicovideo.jp/api/getthumbinfo/$movid");
+		$self->{http}->do_request($context, $req);
+	}
+}
+
 sub output_content {
 	my($self, $context, $content, $ct, $clen, $uri) = @_;
+
+	if ($uri =~ /$watchmatch/ && $ct =~ m!(?:text|application)/xml!) {
+		$self->output_thumbinfo($context, $content, $ct, $clen, $uri);
+		return;
+	}
 
 	# ログインフォームあるいはそのリンクが含まれるかどうか
 	if (defined($auth_mail) &&
@@ -133,6 +153,26 @@ sub output_content {
 	} else {
 		$self->{html}->output_content($context, $content, $ct, $clen, $uri);
 	}
+}
+
+sub output_thumbinfo {
+	my($self, $context, $content, $ct, $clen, $uri) = @_;
+
+	my $parser = XML::DOM::Parser->new();
+	my $doc = $parser->parse($content);
+
+	my @titlenodes = $doc->findnodes('//title');
+	my $titlenode = $titlenodes[0];
+
+	my @tagnodes = $doc->findnodes('//tags[@domain="jp"]/tag');
+
+	# ロックされているタグは太字にする。
+	my $outtags = join(", ", map { my $text = $_->getFirstChild()->getData(); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
+
+	my $outtext =
+			$titlenode->getFirstChild()->getData() .
+			" - ニコニコ動画 (" . $outtags . ")";
+	$context->notice($outtext);
 }
 
 ###############################################################################
