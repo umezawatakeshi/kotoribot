@@ -161,18 +161,37 @@ sub output_thumbinfo {
 	my $parser = XML::DOM::Parser->new();
 	my $doc = $parser->parse($content);
 
-	my @titlenodes = $doc->findnodes('//title');
-	my $titlenode = $titlenodes[0];
+	my $title = findnode($doc, '//title/text()')->getData();
+	my $len = findnode($doc, '//length/text()')->getData();
+	my $view = comsep(findnode($doc, '//view_counter/text()')->getData());
+	my $com = comsep(findnode($doc, '//comment_num/text()')->getData());
+	my $mylist = comsep(findnode($doc, '//mylist_counter/text()')->getData());
+	my $size = sprintf("%.1fMB", findnode($doc, '//size_high/text()')->getData() / (1024*1024));
 
 	my @tagnodes = $doc->findnodes('//tags[@domain="jp"]/tag');
-
 	# ロックされているタグは太字にする。
-	my $outtags = join(", ", map { my $text = $_->getFirstChild()->getData(); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
+	my $tags = join(", ", map { my $text = $_->getFirstChild()->getData(); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
 
-	my $outtext =
-			$titlenode->getFirstChild()->getData() .
-			" - ニコニコ動画 (" . $outtags . ")";
-	$context->notice($outtext);
+	$context->notice("$title - ニコニコ動画 ($len, $size, 再生$view, コメ$com, マイリス$mylist) ($tags)");
+}
+
+sub findnode($$) {
+	my($doc, $path) = @_;
+
+	my @nodes = $doc->findnodes($path);
+	return $nodes[0];
+}
+
+# 3桁カンマ区切りにする。（整数用）
+sub comsep($) {
+	my($val) = @_;
+
+	$val =~ s/(.)(............)$/$1,$2/;
+	$val =~ s/(.)(.........)$/$1,$2/;
+	$val =~ s/(.)(......)$/$1,$2/;
+	$val =~ s/(.)(...)$/$1,$2/;
+
+	return $val;
 }
 
 ###############################################################################
