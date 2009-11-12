@@ -161,6 +161,11 @@ sub output_thumbinfo {
 	my $parser = XML::DOM::Parser->new();
 	my $doc = $parser->parse($content);
 
+	if (findnode($doc, '//nicovideo_thumb_response')->getAttribute("status") ne "ok") {
+		$context->notice("動画情報の取得に失敗しました - ニコニコ動画");
+		return;
+	}
+
 	my $title = findnode($doc, '//title/text()')->getData();
 	my $len = findnode($doc, '//length/text()')->getData();
 	my $view = comsep(findnode($doc, '//view_counter/text()')->getData());
