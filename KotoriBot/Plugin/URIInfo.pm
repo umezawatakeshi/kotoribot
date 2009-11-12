@@ -77,6 +77,13 @@ sub notice {
 	$channel->notice($message, $altmessage);
 }
 
+sub notice_error {
+	my($self, $message, $altmessage) = @_;
+	my $channel = $self->{channel};
+
+	$channel->notice_error($message, $altmessage);
+}
+
 ###############################################################################
 
 package KotoriBot::Plugin::URIInfo::Context;
@@ -158,6 +165,13 @@ sub notice {
 	my $uriinfo = $self->{uriinfo};
 
 	$uriinfo->notice($message, $altmessage);
+}
+
+sub notice_error {
+	my($self, $message, $altmessage) = @_;
+	my $uriinfo = $self->{uriinfo};
+
+	$uriinfo->notice_error($message, $altmessage);
 }
 
 sub notice_redirects {
