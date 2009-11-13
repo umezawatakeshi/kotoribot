@@ -21,9 +21,22 @@ sub new($$$$) {
 		plugins => [], # プラグインのオブジェクトのリスト
 	}, $class);
 
-	foreach my $pluginname (@{$self->{hash}->{plugins}}) {
+	foreach my $plugindesc (@{$self->{hash}->{plugins}}) {
+		my $pluginname;
+		my %pluginargs;
+		if (ref($plugindesc) eq "ARRAY") {
+			my @plugindesc = @$plugindesc;
+			$pluginname = shift(@plugindesc);
+			%pluginargs = @plugindesc;
+		} else {
+			$pluginname = $plugindesc;
+			%pluginargs = ();
+		}
+		print "$pluginname\n";
 		eval "require $pluginname"; if ($@) { die $@; }
-		push(@{$self->{plugins}}, $pluginname->new($self));
+		my $plugin = $pluginname->new($self);
+		push(@{$self->{plugins}}, $plugin);
+		$self->{pluginargs}->{$plugin} = \%pluginargs;
 	}
 
 	return $self;
@@ -36,7 +49,7 @@ sub initialize() {
 	my($self) = @_;
 
 	foreach my $plugin (@{$self->{plugins}}) {
-		$plugin->initialize();
+		$plugin->initialize(%{$self->{pluginargs}->{$plugin}});
 	}
 }
 
