@@ -25,6 +25,7 @@ $conf = {
 				"KotoriBot::Plugin::URIInfo::NicoVideo",
 				"KotoriBot::Plugin::SelfInfo",
 				"KotoriBot::Plugin::NullPo",
+				["KotoriBot::Plugin::NicoLiveAlert", communities => [qw(ch1 ch7)]],
 			],
 		},
 		channels => [ {
