@@ -50,8 +50,8 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA)。</p>
 <li>Crypt::SSLeay（KotoriBot::Plugin::URIInfo::HTTP で https をサポートする場合などに必要）</li>
 <li>Image::ExifTool（KotoriBot::Plugin::URIInfo::Image に必要）</li>
 <li>POE::Component::Client::HTTP（KotoriBot::Plugin::ImasUploaderPolling に必要）</li>
-<li>XML::DOM, XML::DOM::XPath（KotoriBot::Plugin::URIInfo::NicoVideo に必要）</li>
-<li>POE::Component::SSLify（KotoriBot::Plugin::URIInfo::NicoVideo に必要）</li>
+<li>XML::DOM, XML::DOM::XPath（KotoriBot::Plugin::URIInfo::NicoVideo 他に必要）</li>
+<li>POE::Component::SSLify（KotoriBot::Plugin::NicoLiveAlert に必要）</li>
 </ul>
 <h2 id="history">改版履歴</h2>
 <h3>バージョン 1.14.0</h3>
@@ -60,7 +60,7 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA)。</p>
 <li>ニコ生アラートを実装する NicoLiveAlert プラグインを追加した。</li>
 <li>JoinPart プラグインを廃止し、PrivCommand プラグインを追加した。</li>
 <li>チャンネルから退出する際に、メッセージを出力できるようにした。</li>
-<li>URIInfo::NicoVideo プラグインにおいて、動画情報はニコ生 API で取得するようにし、また出力する情報を追加した。</li>
+<li>URIInfo::NicoVideo プラグインにおいて、動画情報はニコ動 API で取得するようにし、また出力する情報を追加した。</li>
 </ul></dd>
 <dt>その他</dt><dd><ul>
 <li>各国語版 Amazon では title タグがページの先頭から 100KB 以上離れたところにあるという極めて頭の悪いページを出力するので、URIInfo::Amazon プラグインが使われているときは 128KB まで読むようにした（場合によってはこれでも足りない可能性がある）。代わりに、それ以外のサイトの場合は 8KB まで読む量を減らした。</li>
