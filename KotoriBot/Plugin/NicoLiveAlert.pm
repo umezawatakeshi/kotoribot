@@ -55,6 +55,7 @@ sub notice {
 sub need_notice {
 	my($self, $community) = @_;
 
+#	return $community =~ /[123]0/;
 	return exists($self->{communities}->{$community});
 }
 
@@ -71,6 +72,7 @@ use XML::DOM;
 use XML::DOM::XPath;
 
 my $retry_interval = 60;
+my $tick_interval = 90;
 
 sub new {
 	my($class) = @_;
@@ -91,7 +93,7 @@ sub new {
 	my $session = POE::Session->create(
 		object_states => [
 			$self => [ qw(
-				_start begin done_auth1 done_auth2 do_notice
+				_start tick begin done_auth1 done_auth2 do_notice
 				tcp_connect tcp_connect_error tcp_disconnect tcp_server_input tcp_server_error
 			) ],
 		],
@@ -105,11 +107,30 @@ sub new {
 sub _start {
 	my($self) = @_;
 
+	$self->{lastrecv} = 0;
+
+	POE::Kernel->delay("tick", $tick_interval);
+
 	POE::Kernel->delay("begin", 5);
+}
+
+sub tick {
+	my($self) = @_;
+
+	POE::Kernel->delay("tick", $tick_interval);
+
+	if ($self->{tcpheap} && $self->{tcpheap}->{connected}) {
+		if ($self->{lastrecv} < time() - $tick_interval) {
+			POE::Kernel->call($self->{tcp_alias}, "shutdown");
+			POE::Kernel->delay("begin", 0); # ここは $retry_interval ではなく即座
+		}
+	}
 }
 
 sub begin {
 	my($self) = @_;
+
+	$self->{tcpheap} = undef;
 
 	my $req = HTTP::Request::Common::POST(
 			"https://secure.nicovideo.jp/secure/login?site=nicolive_antenna",
@@ -202,6 +223,8 @@ sub tcp_disconnect {
 
 sub tcp_server_input {
 	my($self, $data) = @_[OBJECT, ARG0];
+
+	$self->{lastrecv} = time();
 
 	# 本来であれば、データがどのように分割して飛んでくるかは分からないのだが、
 	# 面倒なので1レコードごとに切れて飛んでくるものとして処理している。
