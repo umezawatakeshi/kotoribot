@@ -32,7 +32,6 @@ sub new($$$$) {
 			$pluginname = $plugindesc;
 			%pluginargs = ();
 		}
-		print "$pluginname\n";
 		eval "require $pluginname"; if ($@) { die $@; }
 		my $plugin = $pluginname->new($self);
 		push(@{$self->{plugins}}, $plugin);
