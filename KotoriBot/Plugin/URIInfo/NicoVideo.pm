@@ -24,6 +24,7 @@ my $langhostmatch = qr!http://(tw|es|de)\.nicovideo\.jp/!;
 my $livehostmatch = qr!http://live\.nicovideo\.jp/!;
 
 my $watchmatch = qr!http://(?:www|tw|es|de)\.nicovideo\.jp/watch/(..\d+)!;
+my $comwatchmatch = qr!http://(?:www|tw|es|de)\.nicovideo\.jp/watch/(\d+)!;
 my $livematch = qr!http://live\.nicovideo\.jp/(?:watch|gate)/..\d+!;
 my $thumbinfomatch = qr!http://ext\.nicovideo\.jp/api/getthumbinfo/(..\d+)!;
 
@@ -56,10 +57,13 @@ sub initialize {
 sub transform_uri {
 	my($self, $context, $uri) = @_;
 
-	if ($uri =~ /$watchmatch/) {
+	# 2009/11/19 現在、コミュ動画の URL に関しては getthumbinfo が使えない
+	if ($uri =~ /$watchmatch/ && $uri !~ /$comwatchmatch/) {
 		my $movid = $1;
 		my $req = HTTP::Request::Common::GET("http://ext.nicovideo.jp/api/getthumbinfo/$movid");
 		$self->{http}->do_request($context, $req);
+	} else {
+		$self->{http}->transform_uri($context, $uri);
 	}
 }
 
