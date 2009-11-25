@@ -37,7 +37,7 @@ sub new($) {
 		object_states => [
 			$self => [ qw(
 				_default _start irc_001 irc_disconnected irc_socketerr reconnect tick
-				irc_pong
+				irc_pong irc_352 irc_353
 				irc_join irc_part irc_kick irc_quit irc_invite
 				irc_public irc_notice
 				irc_ctcp_ping irc_ctcp_version
@@ -132,6 +132,16 @@ sub irc_pong {
 	my $irc = $self->{irc};
 
 	$self->{noresp} = 0;
+}
+
+# 352 RPL_WHOREPLY
+sub irc_352 {
+	irc_pong(@_);
+}
+
+# 353 RPL_NAMREPLY
+sub irc_353 {
+	irc_pong(@_);
 }
 
 sub irc_001 {
