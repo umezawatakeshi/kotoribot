@@ -120,7 +120,11 @@ sub tick {
 			print STDERR "server not responding\n";
 			$irc->disconnect();
 		} else {
-			$irc->yield("ping", $irc->server_name());
+			if (defined($irc->server_name())) {
+				$irc->yield("ping", $irc->server_name());
+			} else {
+				print STDERR "not pinging... IRC-level handshake is not completed\n";
+			}
 		}
 	}
 
