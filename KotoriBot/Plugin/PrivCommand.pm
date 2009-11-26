@@ -52,7 +52,6 @@ sub on_public($$) {
 			while (scalar(@names) > 0) {
 				$channel->notice(join(" ", splice(@names, 0, 10)));
 			}
-			$channel->notice(join(" ", @channelnames));
 		}
 		$channel->notice("total ".scalar(@channelnames)." channels");
 	}
