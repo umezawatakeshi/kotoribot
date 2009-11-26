@@ -176,12 +176,14 @@ sub output_thumbinfo {
 	my $com = comsep(findnode($doc, '//comment_num/text()')->getData());
 	my $mylist = comsep(findnode($doc, '//mylist_counter/text()')->getData());
 	my $size = sprintf("%.1fMB", findnode($doc, '//size_high/text()')->getData() / (1024*1024));
+	findnode($doc, '//first_retrieve/text()')->getData() =~ /^(\d\d\d\d-\d\d-\d\d)T(\d\d:\d\d:\d\d)\+09:00$/;
+	my $timestamp = "$1 $2";
 
 	my @tagnodes = $doc->findnodes('//tags[@domain="jp"]/tag');
 	# ロックされているタグは太字にする。
 	my $tags = join(", ", map { my $text = $_->getFirstChild()->getData(); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
 
-	$context->notice("$title - ニコニコ動画 ($len, $size, 再生$view, コメ$com, マイリス$mylist) ($tags)");
+	$context->notice("$title - ニコニコ動画 ($timestamp, $len, $size, 再生 $view, コメ $com, マイリス $mylist) ($tags)");
 }
 
 sub findnode($$) {
