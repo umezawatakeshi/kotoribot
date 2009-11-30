@@ -33,9 +33,8 @@ sub new($$$$) {
 			%pluginargs = ();
 		}
 		eval "require $pluginname"; if ($@) { die $@; }
-		my $plugin = $pluginname->new($self);
+		my $plugin = $pluginname->new($self, %pluginargs);
 		push(@{$self->{plugins}}, $plugin);
-		$self->{pluginargs}->{$plugin} = \%pluginargs;
 	}
 
 	return $self;
@@ -48,7 +47,7 @@ sub initialize() {
 	my($self) = @_;
 
 	foreach my $plugin (@{$self->{plugins}}) {
-		$plugin->initialize(%{$self->{pluginargs}->{$plugin}});
+		$plugin->initialize();
 	}
 }
 

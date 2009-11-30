@@ -8,10 +8,11 @@ use warnings;
 use utf8;
 
 sub new {
-	my($class, $channel) = @_;
+	my($class, $channel, %args) = @_;
 
 	return bless({
 		channel => $channel,
+		args => \%args,
 	}, $class);
 }
 

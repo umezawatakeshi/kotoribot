@@ -25,10 +25,10 @@ if (open(NICOPASS, "<nicopass.txt")) {
 my $receiver;
 
 sub initialize {
-	my($self, %args) = @_;
+	my($self) = @_;
 
 	$self->{communities} = {};
-	my $communitiesref = $args{communities};
+	my $communitiesref = $self->{args}->{communities};
 	if ($communitiesref) {
 		my @communities = @$communitiesref;
 		foreach my $community (@communities) {
