@@ -166,7 +166,16 @@ sub output_thumbinfo {
 	my $doc = $parser->parse($content);
 
 	if (findnode($doc, '//nicovideo_thumb_response')->getAttribute("status") ne "ok") {
-		$context->notice_error("動画情報の取得に失敗しました - ニコニコ動画");
+		my $errorcode = findnode($doc, '//error/code/text()')->getData();
+		if ($errorcode eq "DELETED") {
+			$context->notice_error("動画は削除されています - ニコニコ動画");
+		} elsif ($errorcode eq "COMMUNITY") {
+			$context->notice_error("動画はコミュニティ動画です - ニコニコ動画");
+		} elsif ($errorcode eq "NOT_FOUND") {
+			$context->notice_error("動画はありません - ニコニコ動画");
+		} else {
+			$context->notice_error("ニコ動APIがエラーを返しました ($errorcode) - ニコニコ動画");
+		}
 		return;
 	}
 
