@@ -46,6 +46,26 @@ sub new($) {
 		heap => {}
 	);
 
+	$self->{hash}->{pocoirc_plugins} = [] unless exists $self->{hash}->{pocoirc_plugins};
+	foreach my $plugindesc (@{$self->{hash}->{pocoirc_plugins}}) {
+		my $pluginname;
+		my $pluginalias;
+#		my @pluginargs;
+#		if (ref($plugindesc) eq "ARRAY") {
+#			my @plugindesc = @$plugindesc;
+#			$pluginname = shift(@plugindesc);
+#			@pluginargs = @plugindesc;
+#		} else {
+			$pluginname = $plugindesc;
+			$pluginalias = $pluginname;
+#			@pluginargs = ();
+#		}
+		eval "require $pluginname"; if ($@) { die $@; }
+		my $plugin = $pluginname->new();
+#		my $plugin = $pluginname->new(@pluginargs);
+		$irc->plugin_add($pluginalias, $plugin);
+	}
+
 	return $self;
 }
 
