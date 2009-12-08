@@ -50,19 +50,21 @@ sub new($) {
 	foreach my $plugindesc (@{$self->{hash}->{pocoirc_plugins}}) {
 		my $pluginname;
 		my $pluginalias;
-#		my @pluginargs;
-#		if (ref($plugindesc) eq "ARRAY") {
-#			my @plugindesc = @$plugindesc;
-#			$pluginname = shift(@plugindesc);
-#			@pluginargs = @plugindesc;
-#		} else {
-			$pluginname = $plugindesc;
+		my @pluginargs;
+		if (ref($plugindesc) eq "ARRAY") {
+			my @plugindesc = @$plugindesc;
+			$pluginname  = shift(@plugindesc);
+			$pluginalias = shift(@plugindesc);
+			$pluginalias = $pluginname unless defined($pluginalias);
+			@pluginargs  = @plugindesc;
+		} else {
+			$pluginname  = $plugindesc;
 			$pluginalias = $pluginname;
-#			@pluginargs = ();
-#		}
+			@pluginargs  = ();
+		}
 		eval "require $pluginname"; if ($@) { die $@; }
-		my $plugin = $pluginname->new();
-#		my $plugin = $pluginname->new(@pluginargs);
+		my $plugin = $pluginname->new(@pluginargs);
+		print STDERR "\n$pluginalias\n\n";
 		$irc->plugin_add($pluginalias, $plugin);
 	}
 
