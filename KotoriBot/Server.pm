@@ -67,7 +67,6 @@ sub new($) {
 		}
 		eval "require $pluginname"; if ($@) { die $@; }
 		my $plugin = $pluginname->new(@pluginargs);
-		print STDERR "\n$pluginalias\n\n";
 		$irc->plugin_add($pluginalias, $plugin);
 	}
 
