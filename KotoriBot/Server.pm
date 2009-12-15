@@ -8,7 +8,7 @@ use warnings;
 use utf8;
 
 use Encode;
-use POE qw(Component::IRC);
+use POE qw(Component::IRC Component::IRC::Plugin::NickReclaim);
 
 use KotoriBot::IRC;
 use KotoriBot::Channel;
@@ -45,6 +45,9 @@ sub new($) {
 		],
 		heap => {}
 	);
+
+	# 後ろに _ を付け続ける、というアルゴリズムに見えるにもかかわらず、見た感じ NICKLEN を超えない範囲でしか動作しないのはなぜだ？
+	$irc->plugin_add("NickReclaim", POE::Component::IRC::Plugin::NickReclaim->new(poll => 300));
 
 	$self->{hash}->{pocoirc_plugins} = [] unless exists $self->{hash}->{pocoirc_plugins};
 	foreach my $plugindesc (@{$self->{hash}->{pocoirc_plugins}}) {
