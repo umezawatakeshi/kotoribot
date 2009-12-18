@@ -76,6 +76,7 @@ sub done_request {
 				$req->uri =~ m!^(https?://[^/]+)/!;
 				$location = "$1$location";
 			}
+			$location =~ s/[\x80-\xff]/sprintf("%%%02X",ord($&))/eg;
 			$context->process_redirect($location, "HTTP " . $res->status_line());
 		} else {
 			$context->process_error($res->status_line());
