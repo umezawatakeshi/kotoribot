@@ -1,8 +1,8 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
 # $Id$
 #
-# JIS の範囲に対応する文字が存在しない Unicode 文字を、
-# 自体が似た JIS 文字列に置き換える文字エンコーディング
+# JIS の範囲に対応する文字が存在しない Unicode 文字（主に記号）を、
+# グリフが似た JIS 文字列に置き換える文字エンコーディング
 #
 
 package Encode::JP::ExtJIS;
@@ -60,7 +60,7 @@ sub encode {
 
 	# 変換時に消滅すべき文字
 	# $str =~ s/\x{fffe}//g; # \x{fffe} は Unicode 文字としては不正らしい
-	$str =~ s/\x{feff}//g;
+	$str =~ s/\x{feff}\x{200b}//g;
 
 	return Encode::encode($name, $str, $chk);
 }
