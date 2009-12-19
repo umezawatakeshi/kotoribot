@@ -81,6 +81,7 @@ sub new {
 	my $self = bless({
 		plugins => [],
 		last => undef,
+		alertlist => {},
 	}, $class);
 
 	$self->{ua_alias} = "$self-POE::Component::Client::HTTP";
@@ -238,10 +239,13 @@ sub tcp_server_input {
 			$need_notice |= $plugin->need_notice($community);
 		}
 		if ($need_notice) {
-			my $req = HTTP::Request::Common::GET(
-					"http://live.nicovideo.jp/api/getstreaminfo/lv$liveid"
-			);
-			POE::Kernel->post($self->{ua_alias}, "request", "do_notice", $req, ["lv$liveid", $community]);
+			if (!$self->{alertlist}->{$liveid}) {
+				$self->{alertlist}->{$liveid} = 1;
+				my $req = HTTP::Request::Common::GET(
+						"http://live.nicovideo.jp/api/getstreaminfo/lv$liveid"
+				);
+				POE::Kernel->post($self->{ua_alias}, "request", "do_notice", $req, ["lv$liveid", $community]);
+			}
 		}
 	}
 }
