@@ -144,9 +144,12 @@ sub output_content {
 		}
 
 		my $title = $parser->header("title");
-		if ($content =~ m!<h2 class=\"\">([^<]+)</h2>!) {
-			$title = "$1 - $title";
-		}
+		# どういう条件で <h2 class=""> が出てくるのか良く分からない。というか忘れた。
+		# 最近（2009-12-19）は出てきても <title> タグ内にもちゃんとしたタイトルが出てくるようなので、
+		# ここの処理は要らない…のか？
+		#if ($content =~ m!<h2 class=\"\">([^<]+)</h2>!) {
+		#	$title = "$1 - $title";
+		#}
 
 		$context->notice_redirects();
 		if (scalar(@annotation) > 0) {
