@@ -67,6 +67,7 @@ use strict;
 use warnings;
 use utf8;
 
+use HTTP::Request::Common;
 use POE qw(Component::Client::HTTP Component::Client::TCP);
 use XML::DOM;
 use XML::DOM::XPath;
