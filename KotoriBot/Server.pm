@@ -91,6 +91,10 @@ sub _start {
 }
 
 sub irc_connected {
+	my $self = $_[OBJECT];
+	my $irc = $self->{irc};
+
+	$self->{noresp} = 0;
 }
 
 sub join_channel {
