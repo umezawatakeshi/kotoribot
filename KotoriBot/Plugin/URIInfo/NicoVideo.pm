@@ -135,12 +135,21 @@ sub output_content {
 		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(?:<a href=\"[^>]*?>)?([^<]+?)(?:</a>)?</span>さん!) {
 			push(@annotation, $1);
 		}
-		if ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong>  からスタートしています!) {
-			push(@annotation, "$1:$2 開始");
+		if ($content =~ m!<strong>(\d\d月\d\d日)</strong>\&nbsp;開演:<strong>(AM|PM) (\d\d):(\d\d)</strong>!) {
+			my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
+			$h += 12 if ($ampm =~ /PM/i);
+			push(@annotation, "$md $h:$m 開演");
+		} elsif ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong>  からスタートしています!) {
+			push(@annotation, "$1:$2 開演");
 		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
 			push(@annotation, "$1 $2 開演予定");
 		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開場：<strong>(\d\d:\d\d)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
 			push(@annotation, "$1 $2 開場予定 $3 開演予定");
+		}
+		if ($content =~ m!この番組は(\d\d月\d\d日) (AM|PM) (\d\d):(\d\d)に終了いたしました。!) {
+			my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
+			$h += 12 if ($ampm =~ /PM/i);
+			push(@annotation, "$md $h:$m 終了");
 		}
 
 		my $title = $parser->header("title");
