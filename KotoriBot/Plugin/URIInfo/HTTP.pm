@@ -25,15 +25,16 @@ my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
 my $encoding_fallback = "utf-8";
 
 sub new {
-	my($class, $channel) = @_;
+	my $class = shift;
+	my($channel) = @_;
 
-	my $self = bless(KotoriBot::Plugin->new($channel), $class);
+	my $self = $class->SUPER::new(@_);
 
 	my $ua = LWP::UserAgent->new();
 	$ua->timeout(10);
 	$ua->max_redirect(0);
 	$ua->requests_redirectable([]);
-	$ua->max_size(8 * 1024); # 8KB
+	$ua->max_size($self->{args}->{max_size} || 16 * 1024);
 	$ua->cookie_jar($cookie_jar_obj);
 	$ua->agent(KotoriBot::Core->agent());
 	$self->{ua} = $ua;
