@@ -49,11 +49,13 @@ sub on_public($$) {
 
 		my $content = Encode::decode("utf-8", $res->content);
 		my $parser = HTML::TokeParser->new(\$content);
+		$parser->{textify} = { sup => undef };
 		my $result = undef;
 		while (my $token = $parser->get_tag("img")) {
 			next unless $token->[1]->{src} eq "/images/calc_img.gif";
 			$parser->get_tag("b");
 			$result = $parser->get_trimmed_text("/b");
+			$result =~ s/\[SUP\]/\^/g;
 		}
 		$channel->notice($result, "\x034Error:\x03 Invalid Expression");
 	}
