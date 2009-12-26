@@ -36,7 +36,7 @@ sub new($) {
 	POE::Session->create(
 		object_states => [
 			$self => [ qw(
-				_default _start irc_001 irc_disconnected irc_socketerr reconnect tick
+				_default _start irc_001 irc_connected irc_disconnected irc_socketerr reconnect tick
 				irc_pong irc_352 irc_353
 				irc_join irc_part irc_kick irc_quit irc_invite
 				irc_public irc_notice
