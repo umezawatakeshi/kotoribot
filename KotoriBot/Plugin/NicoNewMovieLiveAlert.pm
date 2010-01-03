@@ -1,7 +1,7 @@
 # 文字コードはＵＴＦ－８、改行コードはＬＦのみ
 # $Id$
 
-package KotoriBot::Plugin::NicoLiveAlert::CampaignNewMovie;
+package KotoriBot::Plugin::NicoNewMovieLiveAlert;
 
 use strict;
 use warnings;
@@ -16,7 +16,7 @@ my $poller;
 sub initialize {
 	my($self) = @_;
 
-	$poller = KotoriBot::Plugin::NicoLiveAlert::CampaignNewMovie::Poller->new() unless defined($poller);
+	$poller = KotoriBot::Plugin::NicoNewMovieLiveAlert::Poller->new() unless defined($poller);
 	$poller->add($self);
 }
 
@@ -34,7 +34,7 @@ sub notice {
 
 ###############################################################################
 
-package KotoriBot::Plugin::NicoLiveAlert::CampaignNewMovie::Poller;
+package KotoriBot::Plugin::NicoNewMovieLiveAlert::Poller;
 
 use strict;
 use warnings;
