@@ -63,7 +63,7 @@ sub new {
 
 	my $session = POE::Session->create(
 		object_states => [
-			$self => [ qw(_start tick done_redirect done_watchpage) ],
+			$self => [ qw(_start tick done_redirect retry_redirect done_watchpage retry_watchpage) ],
 		],
 		heap => {}
 	);
@@ -106,7 +106,23 @@ sub done_redirect {
 			my $req = HTTP::Request->new("GET", $location);
 			POE::Kernel->post($self->{ua_alias}, "request", "done_watchpage", $req);
 		}
+	} else {
+#		$self->notice("NicoNewMovieLiveAlert: \x034Error:\x03 " . $res->status_line());
+		if ($self->{prevtime} + 300 > time()) {
+#			$self->notice("NicoNewMovieLiveAlert: retry");
+			POE::Kernel->delay("retry_redirect", 3);
+		} else {
+			$self->notice("NicoNewMovieLiveAlert: \x034Error:\x03 Request Failed");
+		}
 	}
+}
+
+sub retry_redirect {
+	my($self) = @_;
+
+	my $req = HTTP::Request->new("GET", $jumpurl);
+
+	POE::Kernel->post($self->{ua_alias}, "request", "done_redirect", $req);
 }
 
 # URIInfo の枠組みとは違って、いろいろと決め撃ちで処理している。
@@ -117,14 +133,33 @@ sub done_watchpage {
 	my $req = $reqp->[0];
 	my $res = $resp->[0];
 	my $url = $req->uri();
-	my $content = Encode::decode("utf8", $res->content());
-	my $parser = HTML::HeadParser->new();
 
-	$parser->parse($content);
-	$parser->eof();
+	if ($res->code() eq "200") {
+		my $content = Encode::decode("utf8", $res->content());
+		my $parser = HTML::HeadParser->new();
 
-	my $title = $parser->header("title");
-	$self->notice("CampaignNewMovie: $url $title");
+		$parser->parse($content);
+		$parser->eof();
+
+		my $title = $parser->header("title");
+		$self->notice("NicoNewMovieLiveAlert: $url $title");
+	} else {
+#		$self->notice("NicoNewMovieLiveAlert_: \x034Error:\x03 " . $res->status_line());
+		if ($self->{prevtime} + 300 > time()) {
+#			$self->notice("NicoNewMovieLiveAlert_: retry");
+			POE::Kernel->delay("retry_watchpage", 3, $url);
+		} else {
+			$self->notice("NicoNewMovieLiveAlert: $url (title unknown)");
+		}
+	}
+}
+
+sub retry_watchpage {
+	my($self, $url) = @_[OBJECT, ARG0];
+
+	my $req = HTTP::Request->new("GET", $url);
+
+	POE::Kernel->post($self->{ua_alias}, "request", "done_watchpage", $req);
 }
 
 sub add {
