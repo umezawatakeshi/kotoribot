@@ -39,6 +39,16 @@ sub on_public($$) {
 		foreach my $rchannel (@channels) {
 			$rchannel->notice($rmsg) if ($rchannel != $channel);
 		}
+	} elsif ($message =~ /^\\universalnotice +(.+)/){
+		my $rmsg = $1;
+
+		my @channels;
+		foreach my $server (KotoriBot::Core->servers()) {
+			push(@channels, $server->channels());
+		}
+		foreach my $rchannel (@channels) {
+			$rchannel->notice($rmsg) if ($rchannel != $channel);
+		}
 	}
 }
 
