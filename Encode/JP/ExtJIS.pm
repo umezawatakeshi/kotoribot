@@ -60,7 +60,7 @@ sub encode {
 
 	# 変換時に消滅すべき文字
 	# $str =~ s/\x{fffe}//g; # \x{fffe} は Unicode 文字としては不正らしい
-	$str =~ s/\x{feff}\x{200b}//g;
+	$str =~ s/[\x{feff}\x{200b}]//g;
 
 	return Encode::encode($name, $str, $chk);
 }
