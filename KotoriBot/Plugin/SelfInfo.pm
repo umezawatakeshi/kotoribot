@@ -30,6 +30,8 @@ sub on_public($$) {
 		$channel->notice(KotoriBot::Core->longversion());
 	} elsif ($message =~ /^\\instanceid$/) {
 		$channel->notice(KotoriBot::Core->instanceid());
+	} elsif ($message =~ /^\\perlversion$/) {
+		$channel->notice(sprintf("Perl %vd", $^V));
 	}
 }
 
