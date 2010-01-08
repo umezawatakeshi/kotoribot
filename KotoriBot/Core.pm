@@ -3,6 +3,8 @@
 
 package KotoriBot::Core;
 
+require v5.8.0;
+
 use strict;
 use warnings;
 use utf8;
