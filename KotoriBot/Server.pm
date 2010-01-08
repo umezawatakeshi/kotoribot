@@ -154,6 +154,15 @@ sub tick {
 				print STDERR "not pinging... IRC-level handshake is not completed\n";
 			}
 		}
+
+		foreach my $channelhash (@{$self->{hash}->{channels}}) {
+			my $channelname = $channelhash->{name};
+			if ($channelhash->{persist} == 2 && !exists($self->{channels}->{$channelname})) {
+				my $channelname_encoded = Encode::encode($channelhash->{encoding}, $channelname);
+				$self->{channelname_map}->{$channelname_encoded} = $channelname;
+				$self->join_channel_encoded($channelname_encoded);
+			}
+		}
 	}
 
 	POE::Kernel->delay("tick", 30);
