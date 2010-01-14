@@ -11,17 +11,6 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $auth_mail = undef;
-my $auth_pass;
-
-# パスワードファイルをチェック。
-# あまりイケてる方法ではないように思える。
-if (open(NICOPASS, "<nicopass.txt")) {
-	$auth_mail = <NICOPASS>; chomp($auth_mail);
-	$auth_pass = <NICOPASS>; chomp($auth_pass);
-	close(NICOPASS);
-}
-
 my $receiver;
 
 sub initialize {
@@ -95,7 +84,7 @@ sub new {
 	my $session = POE::Session->create(
 		object_states => [
 			$self => [ qw(
-				_start tick begin done_auth1 done_auth2 do_notice
+				_start tick begin done_auth do_notice
 				tcp_connect tcp_connect_error tcp_disconnect tcp_server_input tcp_server_error
 			) ],
 		],
@@ -134,41 +123,11 @@ sub begin {
 
 	$self->{tcpheap} = undef;
 
-	my $req = HTTP::Request::Common::POST(
-			"https://secure.nicovideo.jp/secure/login?site=nicolive_antenna",
-			{ mail => $auth_mail, password => $auth_pass }
-	);
-	POE::Kernel->post($self->{ua_alias}, "request", "done_auth1", $req);
+	my $req = HTTP::Request::Common::GET("http://live.nicovideo.jp/api/getalertinfo");
+	POE::Kernel->post($self->{ua_alias}, "request", "done_auth", $req);
 }
 
-sub done_auth1 {
-	my($self, $reqp, $resp) = @_[OBJECT, ARG0, ARG1];
-
-	my $res = $resp->[0];
-
-	if (!$res->is_success) {
-		POE::Kernel->delay("begin", $retry_interval);
-		return;
-	}
-
-	my $parser = XML::DOM::Parser->new();
-	my $doc = $parser->parse($res->content);
-
-	my $docel = findnode($doc, '//nicovideo_user_response');
-	if (!defined($docel) || $docel->getAttribute("status") ne "ok") {
-		POE::Kernel->delay("begin", $retry_interval);
-		return;
-	}
-
-	my $ticket = findnode($doc, '//ticket/text()')->getData();
-
-	my $req = HTTP::Request::Common::GET(
-			"http://live.nicovideo.jp/api/getalertstatus?ticket=$ticket"
-	);
-	POE::Kernel->post($self->{ua_alias}, "request", "done_auth2", $req);
-}
-
-sub done_auth2 {
+sub done_auth {
 	my($self, $reqp, $resp) = @_[OBJECT, ARG0, ARG1];
 
 	my $res = $resp->[0];
