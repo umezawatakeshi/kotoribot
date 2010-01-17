@@ -145,6 +145,8 @@ sub output_content {
 			push(@annotation, "$1 $2 開演予定");
 		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開場：<strong>(\d\d:\d\d)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
 			push(@annotation, "$1 $2 開場予定 $3 開演予定");
+		} elsif ($content =~ m!<strong>この番組は順番待ち中です</strong>!) {
+			push(@annotation, "開演順番待ち");
 		}
 		if ($content =~ m!この番組は(\d\d月\d\d日) (AM|PM) (\d\d):(\d\d)に終了いたしました。!) {
 			my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
