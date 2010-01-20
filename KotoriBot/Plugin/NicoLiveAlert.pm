@@ -158,7 +158,7 @@ sub done_auth {
 		RemoteAddress  => $host,
 		RemotePort     => $port,
 		Alias          => $self->{tcp_alias},
-		Filter         => "POE::Filter::Stream", # デフォルトでは POE::Filter::Line になっている
+		Filter         => POE::Filter::Line->new(Literal => "\0"),
 		# 親セッションにイベントを投げてくれるわけではないので自力で投げる
 		Connected      => sub { $self->{tcpheap} = $_[HEAP]; POE::Kernel->call($session, "tcp_connect", @_[ARG0, ARG1, ARG2]) },
 		ConnectError   => sub { POE::Kernel->call($session, "tcp_connect_error", @_[ARG0, ARG1, ARG2]) },
@@ -187,8 +187,6 @@ sub tcp_server_input {
 
 	$self->{lastrecv} = time();
 
-	# 本来であれば、データがどのように分割して飛んでくるかは分からないのだが、
-	# 面倒なので1レコードごとに切れて飛んでくるものとして処理している。
 	if ($data =~ m|<chat\s.*?>(.+?)</chat>| && $1 =~ /(\d+),((?:ch|co)\d+),(\d+)/) {
 		my $liveid = $1;
 		my $community = $2;
