@@ -44,7 +44,7 @@ use LWP;
 use HTML::HeadParser;
 use POE qw(Component::Client::HTTP);
 
-my $jumpurl = "http://live.nicovideo.jp/new_movie";
+my $jumpurl = "http://live.nicovideo.jp/newworld";
 
 sub new {
 	my($class) = @_;
@@ -63,7 +63,7 @@ sub new {
 
 	my $session = POE::Session->create(
 		object_states => [
-			$self => [ qw(_start tick done_redirect retry_redirect done_watchpage retry_watchpage) ],
+			$self => [ qw(_start tick done_listpage retry_listpage done_watchpage retry_watchpage) ],
 		],
 		heap => {}
 	);
@@ -84,22 +84,23 @@ sub tick {
 	POE::Kernel->delay("tick", 3);
 
 	my $now = time();
-	return if (int(($self->{prevtime} - 3) / 1800) == int(($now - 3) / 1800));
+	return if (int(($self->{prevtime} - 3) / 300) == int(($now - 3) / 300));
 	$self->{prevtime} = $now;
 
 	my $req = HTTP::Request->new("GET", $jumpurl);
 
-	POE::Kernel->post($self->{ua_alias}, "request", "done_redirect", $req);
+	POE::Kernel->post($self->{ua_alias}, "request", "done_listpage", $req);
 }
 
-sub done_redirect {
+sub done_listpage {
 	my($self, $reqp, $resp) = @_[OBJECT, ARG0, ARG1];
 
 	my $res = $resp->[0];
 
-	if ($res->code() =~ /^3/) {
-		my $location = $res->header("Location");
-		if ($location =~ m|^http://live.nicovideo.jp/watch/lv\d+|) {
+	if ($res->code() eq "200") {
+		my $content = Encode::decode("utf8", $res->content());
+		if ($content =~ m|<a href="(watch/lv\d+)"><img src=".*?" alt="放送中" /></a>|) {
+			my $location = "http://live.nicovideo.jp/$1";
 			return if ($self->{prevurl} eq $location);
 			$self->{prevurl} = $location;
 #			$self->notice("CampaignNewMovie: $location");
@@ -110,19 +111,19 @@ sub done_redirect {
 #		$self->notice("NicoNewMovieLiveAlert: \x034Error:\x03 " . $res->status_line());
 		if ($self->{prevtime} + 300 > time()) {
 #			$self->notice("NicoNewMovieLiveAlert: retry");
-			POE::Kernel->delay("retry_redirect", 3);
+			POE::Kernel->delay("retry_listpage", 3);
 		} else {
 			$self->notice("NicoNewMovieLiveAlert: \x034Error:\x03 Request Failed");
 		}
 	}
 }
 
-sub retry_redirect {
+sub retry_listpage {
 	my($self) = @_;
 
 	my $req = HTTP::Request->new("GET", $jumpurl);
 
-	POE::Kernel->post($self->{ua_alias}, "request", "done_redirect", $req);
+	POE::Kernel->post($self->{ua_alias}, "request", "done_listpage", $req);
 }
 
 # URIInfo の枠組みとは違って、いろいろと決め撃ちで処理している。
