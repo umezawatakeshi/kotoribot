@@ -130,28 +130,32 @@ sub output_content {
 		$parser->eof();
 
 		my @annotation;
-		if ($content =~ m!放送者:<strong class=\"nicopedia\">(?:<a href=\"[^>]*?>)?([^<]+?)(?:</a>)?</strong>さん!) {
-			push(@annotation, $1);
-		} elsif ($content =~ m!<b>放送者：</b><span class=\"nicopedia\">(?:<a href=\"[^>]*?>)?([^<]+?)(?:</a>)?</span>さん!) {
+
+		if ($content =~ m!放送者:<strong class=\"nicopedia\"><a href=\"[^\"]*?\" target=\"_blank\">([^<]+?)</a></strong>さん!) {
 			push(@annotation, $1);
 		}
-		if ($content =~ m!<strong>(\d\d月\d\d日)</strong>\&nbsp;開演:<strong>(AM|PM) (\d\d):(\d\d)</strong>!) {
-			my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
-			$h += 12 if ($ampm =~ /PM/i);
-			push(@annotation, "$md $h:$m 開演");
-		} elsif ($content =~ m!<strong>(\d\d\d\d年\d\d月\d\d日 \d\d)：(\d\d)</strong>  からスタートしています!) {
-			push(@annotation, "$1:$2 開演");
-		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
-			push(@annotation, "$1 $2 開演予定");
-		} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開場：<strong>(\d\d:\d\d)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
+
+		# ここにマッチするのはどういうときだっけ…
+		#if ($content =~ m!<strong>(\d\d月\d\d日)</strong>\&nbsp;開演:<strong>(AM|PM) (\d\d):(\d\d)</strong>!) {
+		#	my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
+		#	$h += 12 if ($ampm =~ /PM/i);
+		#	push(@annotation, "$md $h:$m 開演");
+		#} els
+		if ($content =~ m!<strong>(\d\d\d\d/\d\d/\d\d\(.\)) (\d\d)[:：](\d\d)</strong>\s*からスタートしています!s) {
+			# 放送中の、公式生放送・ユーザー生放送
+			push(@annotation, "$1 $2:$3 開演, \x02放送中\x0f");
+		# 今は予約するとユーザー生放送でも3分間の準備時間がついてくるので、ここにマッチする事はないはず。
+		#} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
+		#push(@annotation, "$1 $2 開演予定");
+		} elsif ($content =~ m!<\w+ class=\"kaijo\">\s*<strong>(\d\d\d\d/\d\d/\d\d\(.\))</strong>\&nbsp;開場:<strong>(\d\d:\d\d)</strong>\&nbsp;開演:<strong>(\d\d:\d\d)</strong>!s) {
+			# 予約された、公式生放送・ユーザー生放送
 			push(@annotation, "$1 $2 開場予定 $3 開演予定");
 		} elsif ($content =~ m!<strong>この番組は順番待ち中です</strong>!) {
 			push(@annotation, "開演順番待ち");
 		}
-		if ($content =~ m!この番組は(\d\d月\d\d日) (AM|PM) (\d\d):(\d\d)に終了いたしました。!) {
-			my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
-			$h += 12 if ($ampm =~ /PM/i);
-			push(@annotation, "$md $h:$m 終了");
+
+		if ($content =~ m!この番組は(\d\d\d\d/\d\d/\d\d\(.\)) (\d\d:\d\d)に終了いたしました。!) {
+			push(@annotation, "$1 $2 終了");
 		}
 
 		my $title = $parser->header("title");
