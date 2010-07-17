@@ -187,7 +187,14 @@ sub tcp_server_input {
 
 	$self->{lastrecv} = time();
 
-	if ($data =~ m|<chat\s.*?>(.+?)</chat>| && $1 =~ /(\d+),((?:ch|co)\d+),(\d+)/) {
+	print "$data\n";
+	# ニコ生の場合は、
+	#  <chat date="1279341286" no="4742981" premium="6" thread="1000000013" user_id="394">21746141,co394703,12607237</chat>
+	# のようなレコードが来る。
+	# ニコ実況の場合は、
+	#  <chat date="1279341285" no="4742980" premium="6" thread="1000000013" user_id="394">jk7895,co370317,1445265</chat>
+	# のようなレコードが来る。
+	if ($data =~ m|^<chat\s.*?>(.+?)</chat>$| && $1 =~ /^(\d+|jk\d+),((?:ch|co)\d+),(\d+)$/) {
 		my $liveid = $1;
 		my $community = $2;
 		my $userid = $3;
@@ -198,10 +205,15 @@ sub tcp_server_input {
 		if ($need_notice) {
 			if (!$self->{alertlist}->{$liveid}) {
 				$self->{alertlist}->{$liveid} = 1;
-				my $req = HTTP::Request::Common::GET(
-						"http://live.nicovideo.jp/api/getstreaminfo/lv$liveid"
-				);
-				POE::Kernel->post($self->{ua_alias}, "request", "do_notice", $req, ["lv$liveid", $community]);
+				if ($liveid =~ /^\d+$/) {
+					my $req = HTTP::Request::Common::GET(
+							"http://live.nicovideo.jp/api/getstreaminfo/lv$liveid"
+					);
+					POE::Kernel->post($self->{ua_alias}, "request", "do_notice", $req, ["lv$liveid", $community]);
+				} elsif ($liveid =~ /^jk\d+$/) {
+					# ニコ実況の情報を取得するAPIは今のところ不明
+					$self->notice($community, "NicoLiveAlert: http://jk.nicovideo.jp/watch/$liveid ($community)");
+				}
 			}
 		}
 	}
