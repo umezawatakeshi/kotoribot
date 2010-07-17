@@ -119,7 +119,7 @@ sub on_public($$) {
 					my $paramidx = $param_map->{$paramname};
 					my $paramval = $idol->[$paramidx];
 					$paramname = $param_names[$paramidx];
-					$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+					$channel->notice("$fname$gname"."(2)の"."$paramname = $paramval");
 				}
 			}
 		} elsif ($cmd =~ /^($name_match)(?:$nsuffix_match)?(?:の(?:すべて|ぜんぶ|全て|全部))?$/) {
@@ -130,7 +130,7 @@ sub on_public($$) {
 			foreach my $paramidx (@infolist) {
 				my $paramval = $idol->[$paramidx];
 				my $paramname = $param_names[$paramidx];
-				$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+				$channel->notice("$fname$gname"."(2)の"."$paramname = $paramval");
 			}
 		} elsif ($cmd =~ /^(?:みんな|全員)の($param_match)$/) {
 			my $paramname = $1;
@@ -140,7 +140,7 @@ sub on_public($$) {
 				my $fname = $idol->[0];
 				my $gname = $idol->[2];
 				my $paramval = $idol->[$paramidx];
-				$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+				$channel->notice("$fname$gname"."(2)の"."$paramname = $paramval");
 			}
 		} elsif ($cmd =~ /^($param_match)が(\S+)/) {
 			my $num = 0;
@@ -152,7 +152,7 @@ sub on_public($$) {
 				if ($idol->[$paramidx] eq $paramval) {
 					my $fname = $idol->[0];
 					my $gname = $idol->[2];
-					$channel->notice("$fname$gname"."の"."$paramname = $paramval");
+					$channel->notice("$fname$gname"."(2)の"."$paramname = $paramval");
 					$num++;
 				}
 			}
