@@ -43,8 +43,8 @@ use utf8;
 use HTML::TokeParser;
 use POE qw(Component::Client::HTTP);
 
-my $listurl = "http://imasupd.ddo.jp/~imas/cgi-bin/pages.html";
-my $baseurl = "http://imasupd.ddo.jp/~imas/cgi-bin/src/";
+my $listurl = "http://imas.ath.cx/~imas/cgi-bin/pages.html";
+my $baseurl = "http://imas.ath.cx/~imas/cgi-bin/src/";
 my $first_delay = 30;
 my $next_delay = 300;
 
