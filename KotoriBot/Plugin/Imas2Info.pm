@@ -130,7 +130,7 @@ sub on_public($$) {
 					$channel->notice("$fname$gname"."(2)の"."$paramname = $paramval");
 				}
 			}
-		} elsif ($cmd =~ /^($name_match)(?:$nsuffix_match)?(?:の(?:すべて|ぜんぶ|全て|全部))?$/) {
+		} elsif ($cmd =~ /^($name_match)(?:$nsuffix_match)?の(?:すべて|ぜんぶ|全て|全部)?$/) {
 			my $name = lc($1);
 			my $idol = $name_map->{$name};
 			my $fname = $idol->[0];
