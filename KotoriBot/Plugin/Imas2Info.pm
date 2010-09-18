@@ -102,6 +102,9 @@ for (my $i = 0; $i < scalar(@$idollist); $i++) {
 	$name_map->{"$idol->[0]$idol->[2]"} = $idol;
 }
 
+$name_map->{"社長"} = $name_map->{"高木"};
+$name_map->{"高木社長"} = $name_map->{"高木"};
+$name_map->{"黒井社長"} = $name_map->{"黒井"};
 # 長さの降順にソートしておかないと、"双海亜美" が "双海" にマッチして真美の情報が出てきてしまう
 $name_match = join("|", sort { length($b) <=> length($a) } keys(%$name_map));
 $name_match = qr/$name_match/i;
