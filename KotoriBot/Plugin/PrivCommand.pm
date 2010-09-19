@@ -35,7 +35,6 @@ sub on_public($$) {
 	} elsif ($message =~ /^\\part +(\#\S+)(?:\s+(\S+))?$/) {
 		my $channelname = $1;
 		my $partmsg = $2;
-		print "$partmsg\n";
 		my $channel_to_part = $self->{channel}->server()->channel($channelname);
 		if (defined($channel_to_part)) {
 			$channel_to_part->part($partmsg);
@@ -43,6 +42,10 @@ sub on_public($$) {
 		} else {
 			$channel->notice("\x034Error:\x03 No such channel");
 		}
+	} elsif ($message =~ /^\\remoteoperdeal +(\#\S+)\s+(\S+)$/) {
+		my $channelname = $1;
+		my $nick = $2;
+		$channel->mode("+o", $nick);
 	} elsif ($message =~ /^\\channel[sl]?$/) {
 		my @channelnames = map { $_->name() } $channel->server()->channels();
 		if ($message eq "\\channell") {
