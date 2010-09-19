@@ -45,7 +45,13 @@ sub on_public($$) {
 	} elsif ($message =~ /^\\remoteoperdeal +(\#\S+)\s+(\S+)$/) {
 		my $channelname = $1;
 		my $nick = $2;
-		$channel->mode("+o", $nick);
+		my $channel_to_mode = $self->{channel}->server()->channel($channelname);
+		if (defined($channel_to_mode)) {
+			$channel_to_mode->mode("+o", $nick);
+			$channel->notice("Dealed to $nick at $channelname") unless $channelname eq $channel->name();
+		} else {
+			$channel->notice("\x034Error:\x03 No such channel");
+		}
 	} elsif ($message =~ /^\\channel[sl]?$/) {
 		my @channelnames = map { $_->name() } $channel->server()->channels();
 		if ($message eq "\\channell") {
