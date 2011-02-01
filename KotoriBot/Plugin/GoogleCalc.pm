@@ -52,7 +52,7 @@ sub on_public($$) {
 		$parser->{textify} = { sup => undef };
 		my $result = undef;
 		while (my $token = $parser->get_tag("img")) {
-			next unless $token->[1]->{src} eq "/images/calc_img.gif";
+			next unless $token->[1]->{src} eq "/images/icons/onebox/calculator-40.gif";
 			$parser->get_tag("b");
 			$result = $parser->get_trimmed_text("/b");
 			$result =~ s/\[SUP\]/\^/g;
