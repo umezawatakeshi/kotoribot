@@ -131,22 +131,13 @@ sub output_content {
 
 		my @annotation;
 
-		if ($content =~ m!放送者:<strong class=\"nicopedia\"><a href=\"[^\"]*?\" target=\"_blank\">([^<]+?)</a></strong>さん!) {
+		if ($content =~ m!放送者:<strong class=\"nicopedia(?:_nushi)?\"><a href=\"[^\"]*?\" target=\"_blank\">([^<]+?)</a></strong>さん!) {
 			push(@annotation, $1);
 		}
 
-		# ここにマッチするのはどういうときだっけ…
-		#if ($content =~ m!<strong>(\d\d月\d\d日)</strong>\&nbsp;開演:<strong>(AM|PM) (\d\d):(\d\d)</strong>!) {
-		#	my($md, $ampm, $h, $m) = ($1, $2, $3, $4);
-		#	$h += 12 if ($ampm =~ /PM/i);
-		#	push(@annotation, "$md $h:$m 開演");
-		#} els
-		if ($content =~ m!<strong>(\d\d\d\d/\d\d/\d\d\(.\)) (\d\d)[:：](\d\d)</strong>\s*からスタートしています!s) {
+		if ($content =~ m!<span class=\"date\">\s*(\d\d\d\d/\d\d/\d\d\(.\))\s*開場\s*\d\d[:：]\d\d\s*開演\s*(\d\d)[:：](\d\d)!s) {
 			# 放送中の、公式生放送・ユーザー生放送
 			push(@annotation, "$1 $2:$3 開演, \x02放送中\x0f");
-		# 今は予約するとユーザー生放送でも3分間の準備時間がついてくるので、ここにマッチする事はないはず。
-		#} elsif ($content =~ m!<\w+ class=\"date\">\s*<strong>(\d\d月\d\d日)</strong>\s*開演：<strong>(\d\d:\d\d)</strong>!s) {
-		#push(@annotation, "$1 $2 開演予定");
 		} elsif ($content =~ m!<\w+ class=\"kaijo\">\s*<strong>(\d\d\d\d/\d\d/\d\d\(.\))</strong>\&nbsp;開場:<strong>(\d\d:\d\d)</strong>\&nbsp;開演:<strong>(\d\d:\d\d)</strong>!s) {
 			# 予約された、公式生放送・ユーザー生放送
 			push(@annotation, "$1 $2 開場予定 $3 開演予定");
@@ -159,12 +150,6 @@ sub output_content {
 		}
 
 		my $title = $parser->header("title");
-		# どういう条件で <h2 class=""> が出てくるのか良く分からない。というか忘れた。
-		# 最近（2009-12-19）は出てきても <title> タグ内にもちゃんとしたタイトルが出てくるようなので、
-		# ここの処理は要らない…のか？
-		#if ($content =~ m!<h2 class=\"\">([^<]+)</h2>!) {
-		#	$title = "$1 - $title";
-		#}
 
 		$context->notice_redirects();
 		if (scalar(@annotation) > 0) {
