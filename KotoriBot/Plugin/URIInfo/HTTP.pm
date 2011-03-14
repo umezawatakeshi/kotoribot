@@ -18,7 +18,7 @@ our @ISA = qw(KotoriBot::Plugin);
 
 my $cookie_jar_obj = HTTP::Cookies->new( file => "cookies.txt" );
 
-my $httpurlmatch = qr!https?://[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~]+!;
+my $httpurlmatch = qr!https?://(\#\x21|[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~])+!;
 
 # 本来は設定ファイルで設定できるようにするべき。
 my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
