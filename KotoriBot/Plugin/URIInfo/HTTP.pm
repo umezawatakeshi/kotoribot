@@ -34,7 +34,7 @@ sub new {
 	$ua->timeout(10);
 	$ua->max_redirect(0);
 	$ua->requests_redirectable([]);
-	$ua->max_size($self->{args}->{max_size} || 16 * 1024);
+	$ua->max_size($self->{args}->{max_size} || 64 * 1024);
 	$ua->cookie_jar($cookie_jar_obj);
 	$ua->agent(KotoriBot::Core->agent());
 	$self->{ua} = $ua;
