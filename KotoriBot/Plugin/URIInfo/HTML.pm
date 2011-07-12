@@ -23,7 +23,7 @@ sub initialize {
 }
 
 sub output_content {
-	my($self, $context, $content, $ct) = @_;
+	my($self, $context, $content, $ct, $clen, $uri) = @_;
 
 	my $title = undef;
 	my $parser = HTML::TokeParser->new(\$content);
@@ -36,7 +36,7 @@ sub output_content {
 	}
 
 	$context->notice_redirects();
-	$context->notice($title, "(Untitled Document)");
+	$context->notice($title, "$ct (Untitled Document), $clen" . "bytes");
 }
 
 ###############################################################################
