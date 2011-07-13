@@ -21,7 +21,7 @@ my $cookie_jar_obj = HTTP::Cookies->new( file => "cookies.txt" );
 my $httpurlmatch = qr!https?://(\#\x21|[\#\%\&\(\)\*\+\,\-\.\/0-9\:\;\=\?\@A-Z\_a-z\~])+!;
 
 # 本来は設定ファイルで設定できるようにするべき。
-my @encoding_suspects = qw(euc-jp iso-2022-jp shift_jis);
+my @encoding_suspects = qw(euc-jp shift_jis iso-2022-jp);
 my $encoding_fallback = "utf-8";
 
 sub new {
@@ -109,15 +109,22 @@ sub done_request {
 				}
 			}
 
-			if (!defined($enc)) {
+			# Encode::Guess::guess_encoding の挙動がおかしく、
+			# ちゃんと guess してくれないので、自前でそれらしい処理を行う。
+			foreach my $name ("utf-8", @encoding_suspects) {
+				last if (defined($enc));
 				eval {
-					$enc = guess_encoding($content, @encoding_suspects);
-				}; if ($@) {
-					print STDERR $@;
-				}
-				if (!ref($enc)) {
-					$enc = Encode::find_encoding($encoding_fallback); # guess 失敗。
-				}
+					my $try = Encode::find_encoding($name);
+					# 直接 $content を渡すと、decode から帰ってくると
+					# なぜか $content の中身が変わっているので、
+					# 一時変数にコピーしてそれを渡す。
+					my $tmp = $content;
+					$try->decode($tmp, Encode::FB_CROAK); # 不正なバイト列があると例外が発生して eval を抜ける
+					$enc = $try;
+				};
+			}
+			if (!defined($enc)) {
+				$enc = Encode::find_encoding($encoding_fallback);
 			}
 
 			$content = $enc->decode($content);
