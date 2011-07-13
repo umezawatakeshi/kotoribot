@@ -93,9 +93,36 @@ sub done_request {
 
 	if (!$ct) {
 		$context->process_error("Content-Type Undefined");
-	} elsif (!defined(my $content = $res->decoded_content)) {
-		$context->process_error("Content-Encoding or charset Unknown\n");
+	} elsif (!defined(my $content = $res->decoded_content(charset => "none"))) {
+		$context->process_error("Content-Encoding Unknown");
 	} else {
+		if ($ct =~ m|text/|) {
+			my @ct = $res->header("Content-Type"); # HTML 中の <meta http-equiv="Content-Type"> も一緒に返ってくる。
+			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } reverse @ct));
+			my $charset = $charsets[0];
+
+			my $enc = undef;
+			if (defined($charset)) {
+				$enc = Encode::find_encoding($charset);
+				if (!ref($enc)) {
+					$enc = undef;
+				}
+			}
+
+			if (!defined($enc)) {
+				eval {
+					$enc = guess_encoding($content, @encoding_suspects);
+				}; if ($@) {
+					print STDERR $@;
+				}
+				if (!ref($enc)) {
+					$enc = Encode::find_encoding($encoding_fallback); # guess 失敗。
+				}
+			}
+
+			$content = $enc->decode($content);
+		}
+
 		my $clen = $res->content_length;
 		my $crange = $res->header("Content-Range");
 		if (defined($crange)) {
