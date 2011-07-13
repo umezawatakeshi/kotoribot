@@ -35,8 +35,15 @@ sub output_content {
 		$title =~ s/\s+/ /g;
 	}
 
+	if (defined($clen)) {
+		1 while $clen =~ s/(\d+)(\d\d\d)/$1,$2/;
+		$clen = ", $clen" . "bytes";
+	} else {
+		$clen = "";
+	}
+
 	$context->notice_redirects();
-	$context->notice($title, "$ct (Untitled Document), $clen" . "bytes");
+	$context->notice($title, "$ct (Untitled Document)$clen");
 }
 
 ###############################################################################
