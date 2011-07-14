@@ -68,7 +68,16 @@ sub encode {
 
 	# 変換時に消滅すべき文字
 	# $str =~ s/\x{fffe}//g; # \x{fffe} は Unicode 文字としては不正らしい
-	$str =~ s/[\x{feff}\x{200b}]//g;
+	$str =~ s/[\x{feff}\x{200b}\x{200e}\x{200f}\x{202a}\x{202b}\x{202c}\x{202d}\x{202e}]//g;
+	# \x{feff} = ZERO WIDTH NO-BREAK SPACE (ZWNBSP) / BYTE ORDER MARK (BOM)
+	# \x{200b} = ZERO WIDTH SPACE (ZWSP)
+	# \x{200e} = LEFT-TO-RIGHT MARK (LRM)
+	# \x{200f} = RIGHT-TO-LEFT MARK (RLM)
+	# \x{202a} = LEFT-TO-RIGHT EMBEDDING (LRE)
+	# \x{202b} = RIGHT-TO-LEFT EMBEDDING (RLE)
+	# \x{202c} = POP DIRECTIONAL FORMATTING (PDF)
+	# \x{202d} = LEFT-TO-RIGHT OVERRIDE (LRO)
+	# \x{202e} = RIGHT-TO-LEFT OVERRIDE (RLO)
 
 	return Encode::encode($name, $str, $chk);
 }
