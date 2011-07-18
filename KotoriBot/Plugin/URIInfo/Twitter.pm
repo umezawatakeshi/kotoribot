@@ -13,7 +13,7 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $hashtweetmatch = qr!http://twitter\.com/\#\x21/([^/]+/status/\d+)!;
+my $hashtweetmatch = qr!https?://twitter\.com/\#\x21/([^/]+/.*)!;
 
 sub initialize {
 	my($self) = @_;
