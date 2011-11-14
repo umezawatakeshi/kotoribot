@@ -51,10 +51,9 @@ sub on_public($$) {
 		my $parser = HTML::TokeParser->new(\$content);
 		$parser->{textify} = { sup => undef };
 		my $result = undef;
-		while (my $token = $parser->get_tag("img")) {
-			next unless $token->[1]->{src} eq "/images/icons/onebox/calculator-40.gif";
-			$parser->get_tag("b");
-			$result = $parser->get_trimmed_text("/b");
+		while (my $token = $parser->get_tag("h2")) {
+			next unless $token->[1]->{class} eq "r";
+			$result = $parser->get_trimmed_text("/h2");
 			$result =~ s/\[SUP\]/\^/g;
 		}
 		$channel->notice($result, "\x034Error:\x03 Invalid Expression");
