@@ -110,11 +110,11 @@ sub process_uri {
 }
 
 sub process_redirect {
-	my($self, $uri, $message) = @_;
+	my($self, $uri, $message, $hidden) = @_;
 	my $uriinfo = $self->{uriinfo};
 	my $redirects = $self->{redirects};
 
-	push(@$redirects, [ $uri, $message ]);
+	push(@$redirects, [ $uri, $message, $hidden ]);
 
 	if (scalar(grep { $_->[0] eq $uri } @$redirects) > 1 && !$self->{disable_loop_detection}) {
 		$self->process_error("Redirection Loop");
@@ -177,14 +177,18 @@ sub notice_error {
 sub notice_redirects {
 	my($self) = @_;
 	my $redirects = $self->{redirects};
+	my $numredir = 0;
 
-	if (scalar(@$redirects) > 1) {
+	if (scalar(grep {!$_->[2]} @$redirects) > 1) {
 		$self->notice($redirects->[0]->[0]);
 		for (my $i = 1; $i < scalar(@$redirects); $i++) {
-			my($uri, $reason) = @{$redirects->[$i]};
-			my $message = sprintf("%s> %s", "-" x $i, $uri);
-			$message = "$message ($reason)" if defined($reason);
-			$self->notice($message);
+			my($uri, $reason, $hidden) = @{$redirects->[$i]};
+			if (!$hidden) {
+				$numredir++;
+				my $message = sprintf("%s> %s", "-" x $numredir, $uri);
+				$message = "$message ($reason)" if defined($reason);
+				$self->notice($message);
+			}
 		}
 	}
 }
