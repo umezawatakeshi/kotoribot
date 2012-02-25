@@ -33,9 +33,9 @@ sub transform_uri {
 	my($self, $context, $uri) = @_;
 
 	if ($uri =~ /$hashtweetmatch/) {
-		$context->process_redirect("http://twitter.com/$1", undef, 0);
+		$context->process_redirect("http://twitter.com/$1", undef, 1);
 	} elsif ($uri =~ /$statusmatch/) {
-		$context->process_redirect("http://api.twitter.com/1/statuses/show/$1.json", undef);
+		$context->process_redirect("http://api.twitter.com/1/statuses/show/$1.json", undef, 1);
 	} else {
 		$context->process_error(ref($self).": Unexpected Transformation Request");
 	}
@@ -49,6 +49,7 @@ sub output_content {
 	my $username = $doc->{user}{name};
 	my $text = $doc->{text};
 
+	$context->notice_redirects();
 	$context->notice("Twitter / $username: $text");
 }
 
