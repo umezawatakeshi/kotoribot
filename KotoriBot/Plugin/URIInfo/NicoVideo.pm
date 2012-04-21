@@ -182,7 +182,7 @@ sub output_thumbinfo {
 		return;
 	}
 
-	my $title = findnode($doc, '//title/text()')->getData();
+	my $title = $doc->expandEntityRefs(findnode($doc, '//title/text()')->getData());
 	my $len = findnode($doc, '//length/text()')->getData();
 	my $view = comsep(findnode($doc, '//view_counter/text()')->getData());
 	my $com = comsep(findnode($doc, '//comment_num/text()')->getData());
@@ -193,7 +193,7 @@ sub output_thumbinfo {
 
 	my @tagnodes = $doc->findnodes('//tags[@domain="jp"]/tag');
 	# ロックされているタグは太字にする。
-	my $tags = join(", ", map { my $text = unescape($_->getFirstChild()->getData()); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
+	my $tags = join(", ", map { my $text = $doc->expandEntityRefs($_->getFirstChild()->getData()); $_->getAttribute("lock") ? "\x02$text\x0f" : $text } @tagnodes);
 
 	$context->notice("$title - ニコニコ動画 ($timestamp, $len, $size, 再生 $view, コメ $com, マイリス $mylist) ($tags)");
 }
@@ -215,17 +215,6 @@ sub comsep($) {
 	$val =~ s/(.)(...)$/$1,$2/;
 
 	return $val;
-}
-
-sub unescape($) {
-	my($text) = @_;
-
-	$text =~ s/\&quot;/\"/g;
-	$text =~ s/\&lt;/\</g;
-	$text =~ s/\&gt;/\>/g;
-	$text =~ s/\&amp;/\&/g;
-
-	return $text;
 }
 
 ###############################################################################
