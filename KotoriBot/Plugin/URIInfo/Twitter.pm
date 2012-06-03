@@ -13,8 +13,8 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $hashtweetmatch = qr!https?://twitter\.com/\#\x21/([^/]+/.*)!;
-my $statusmatch = qr!https?://twitter\.com/[a-zA-z_]+/status/(\d+)!;
+my $hashurlmatch = qr!https?://twitter\.com/\#\x21/([a-zA-z0-9_]+(?:/status/\d+(?:/photo/\d+)?)?)!;
+my $statusmatch = qr!https?://twitter\.com/[a-zA-z0-9_]+/status/(\d+)(?:/photo/\d+)?!;
 my $statusapijsonmatch = qr!https?://api\.twitter\.com/1/statuses/show/\d+\.json!;
 
 sub initialize {
@@ -23,7 +23,7 @@ sub initialize {
 
 	my $uriinfo = $channel->plugin("KotoriBot::Plugin::URIInfo");
 	if ($uriinfo) {
-		$uriinfo->add_transform_plugin($self, $hashtweetmatch);
+		$uriinfo->add_transform_plugin($self, $hashurlmatch);
 		$uriinfo->add_transform_plugin($self, $statusmatch);
 		$uriinfo->add_output_plugin($self, $statusapijsonmatch, qr!application/json!);
 	}
@@ -32,7 +32,7 @@ sub initialize {
 sub transform_uri {
 	my($self, $context, $uri) = @_;
 
-	if ($uri =~ /$hashtweetmatch/) {
+	if ($uri =~ /$hashurlmatch/) {
 		$context->process_redirect("http://twitter.com/$1", undef, 1);
 	} elsif ($uri =~ /$statusmatch/) {
 		$context->process_redirect("http://api.twitter.com/1/statuses/show/$1.json", undef, 1);
