@@ -20,6 +20,7 @@ sub new {
 
 	my $self = $class->SUPER::new($channel);
 	$self->{ua}->max_size(128 * 1024); # 128KB
+	$self->{ua}->agent("KotoriBotForAmazon/" . KotoriBot::Core->version());
 
 	return $self;
 }
