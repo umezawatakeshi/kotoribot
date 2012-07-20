@@ -98,6 +98,7 @@ sub done_request {
 	} else {
 		if ($ct =~ m|text/|) {
 			my @ct = $res->header("Content-Type"); # HTML 中の <meta http-equiv="Content-Type"> も一緒に返ってくる。
+			# ここで、@ct には HTTP ヘッダの Content-Type、meta タグの Content-Type の順番で返ってくる。
 			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } reverse @ct));
 			my $charset = $charsets[0];
 
