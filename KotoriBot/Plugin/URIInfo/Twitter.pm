@@ -13,8 +13,8 @@ use KotoriBot::Plugin;
 
 our @ISA = qw(KotoriBot::Plugin);
 
-my $hashurlmatch = qr!https?://twitter\.com/\#\x21/([a-zA-z0-9_]+(?:/status/\d+(?:/photo/\d+)?)?)!;
-my $statusmatch = qr!https?://twitter\.com/[a-zA-z0-9_]+/status/(\d+)(?:/photo/\d+)?!;
+my $hashurlmatch = qr!https?://twitter\.com/\#\x21/([a-zA-z0-9_]+(?:/status(?:es)?/\d+(?:/photo/\d+)?)?)!;
+my $statusmatch = qr!https?://twitter\.com/[a-zA-z0-9_]+/status(?:es)?/(\d+)(?:/photo/\d+)?!;
 my $statusapijsonmatch = qr!https?://api\.twitter\.com/1/statuses/show/\d+\.json!;
 
 sub initialize {
