@@ -101,27 +101,23 @@ sub done_request {
 			# ここで、@ct には HTTP ヘッダの Content-Type、meta タグの Content-Type の順番で返ってくる。
 			my @charsets = grep(!/^none$/i, map { s/^charset=//i; $_; } grep(/^charset=/i, map { split(/[;\s]+/, $_); } reverse @ct));
 			my $charset = $charsets[0];
-
-			my $enc = undef;
-			if (defined($charset)) {
-				$enc = Encode::find_encoding($charset);
-				if (!ref($enc)) {
-					$enc = undef;
-				}
-			}
+			my @suspects = ("utf-8", @encoding_suspects);
+			unshift(@suspects, $charset) if (defined($charset));
 
 			# Encode::Guess::guess_encoding の挙動がおかしく、
 			# ちゃんと guess してくれないので、自前でそれらしい処理を行う。
-			foreach my $name ("utf-8", @encoding_suspects) {
-				last if (defined($enc));
+			my $restlen = length($content);
+			my $enc = undef;
+			foreach my $name (@suspects) {
+				my $try = Encode::find_encoding($name);
+				next if (!ref($try));
 				eval {
-					my $try = Encode::find_encoding($name);
-					# 直接 $content を渡すと、decode から帰ってくると
-					# なぜか $content の中身が変わっているので、
-					# 一時変数にコピーしてそれを渡す。
 					my $tmp = $content;
-					$try->decode($tmp, Encode::FB_CROAK); # 不正なバイト列があると例外が発生して eval を抜ける
-					$enc = $try;
+					$try->decode($tmp, Encode::FB_QUIET);
+					if (length($tmp) < $restlen) {
+						$enc = $try;
+						$restlen = length($tmp);
+					}
 				};
 			}
 			if (!defined($enc)) {
