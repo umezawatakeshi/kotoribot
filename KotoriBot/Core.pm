@@ -19,7 +19,7 @@ sub expand_serverhash($);
 my $instanceid = md5_hex(time() . " " . `uname -a`); # /dev/urandom も読むべきか。
 my @servers;
 
-sub version { return "1.20.0"; }
+sub version { return "1.21.0"; }
 sub longversion { return "KotoriBot " . version(); }
 sub agent { return "KotoriBot/" . version(); }
 sub instanceid { return $instanceid; }
