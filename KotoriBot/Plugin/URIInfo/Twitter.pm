@@ -8,6 +8,7 @@ use warnings;
 use utf8;
 
 use JSON qw(decode_json);
+use XML::DOM; # for XML::DOM::Node->expandEntityRefs() entity method
 
 use KotoriBot::Plugin;
 
@@ -45,9 +46,13 @@ sub output_content {
 	my($self, $context, $content, $ct, $clen, $uri) = @_;
 
 	my $doc = decode_json($content);
+	my $xmldoc = XML::DOM::Document->new();
 
+	# 2012-12-08 時点では、
+	# ユーザ名は実体参照エスケープされていないが、
+	# テキストはエスケープされているようだ。
 	my $username = $doc->{user}{name};
-	my $text = $doc->{text};
+	my $text = $xmldoc->expandEntityRefs($doc->{text});
 
 	$context->notice_redirects();
 	$context->notice("Twitter / $username: $text");
