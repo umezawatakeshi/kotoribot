@@ -171,7 +171,7 @@ sub output_thumbinfo {
 	if (findnode($doc, '//nicovideo_thumb_response')->getAttribute("status") ne "ok") {
 		my $errorcode = findnode($doc, '//error/code/text()')->getData();
 		if ($errorcode eq "DELETED") {
-			$context->notice_error("動画は削除されています - ニコニコ動画");
+			$context->notice_error("動画は削除されているか非公開です - ニコニコ動画");
 		} elsif ($errorcode eq "COMMUNITY") {
 			$context->notice_error("動画はコミュニティ動画です - ニコニコ動画");
 		} elsif ($errorcode eq "NOT_FOUND") {
