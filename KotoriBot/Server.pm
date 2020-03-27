@@ -157,7 +157,7 @@ sub tick {
 
 		foreach my $channelhash (@{$self->{hash}->{channels}}) {
 			my $channelname = $channelhash->{name};
-			if ($channelhash->{persist} == 2 && !exists($self->{channels}->{$channelname})) {
+			if (defined($channelhash->{persist}) && $channelhash->{persist} == 2 && !exists($self->{channels}->{$channelname})) {
 				my $channelname_encoded = Encode::encode($channelhash->{encoding}, $channelname);
 				$self->{channelname_map}->{$channelname_encoded} = $channelname;
 				$self->join_channel_encoded($channelname_encoded);
